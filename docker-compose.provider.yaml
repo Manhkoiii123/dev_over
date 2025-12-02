@@ -1,9 +1,9 @@
-name: einvoice-provider
+name: overflow-provider
 
 networks:
-  einvoice-nw:
+  overflow-nw:
     driver: bridge
-    name: einvoice-nw
+    name: overflow-nw
 
 services:
   mongodb:
@@ -18,7 +18,7 @@ services:
       - ./docker/docker_data/mongodb_data:/data/db
     restart: unless-stopped
     networks:
-      - einvoice-nw
+      - overflow-nw
   postgres:
     image: postgres
     container_name: postgres_server
@@ -26,13 +26,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
-      POSTGRES_DB: einvoice-app
+      POSTGRES_DB: overflow-app
     ports:
       - '5433:5432'
     volumes:
       - ./docker/docker_data/postgres_data:/var/lib/postgresql/data
     networks:
-      - einvoice-nw
+      - overflow-nw
   pgadmin:
     image: dpage/pgadmin4:7.8
     container_name: pgadmin_ui
@@ -45,6 +45,6 @@ services:
     depends_on:
       - postgres
     networks:
-      - einvoice-nw
+      - overflow-nw
     volumes:
       - ./docker/docker_data/pgadmin_data:/var/lib/pgadmin
