@@ -17,7 +17,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     const config = new DocumentBuilder()
-      .setTitle('Invoice BFF API')
+      .setTitle('Devoverflow API')
       .setDescription('The BnT API description')
       .setVersion('1.0.0')
       .addBearerAuth({
