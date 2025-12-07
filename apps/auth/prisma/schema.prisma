@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum VerificationCodeType {
+  EMAIL_CONFIRMATION
+  PASSWORD_RESET
+}
+
+model User {
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  username    String     @unique
+  name        String
+  password    String
+
+  phoneNumber String?
+  avatar      String?
+  bio         String?
+  location    String?
+  reputation  Int        @default(0)
+  status      UserStatus @default(ACTIVE)
+
+  deletedAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime?
+
+  devices     Device[]
+
+  @@index([deletedAt])
+}
+
+model Device {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+
+  userAgent  String
+  ip         String
+
+  lastActive DateTime?
+  createdAt  DateTime @default(now())
+  isActive   Boolean  @default(false)
+
+  refreshTokens RefreshToken[]
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id])
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@index([deviceId])
+}
+
+model VerificationCode {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String
+  type      VerificationCodeType
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, type, code])
+  @@index([expiresAt])
+}
