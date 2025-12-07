@@ -5,13 +5,14 @@ import { CONFIGURATION, TConfiguration } from '../configuration';
 import { LoggerMiddleware } from '@common/middlewares/logger.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { exceptionInterceptor } from '@common/interceptors/exception.interceptor';
-
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [() => CONFIGURATION],
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [
