@@ -12,6 +12,7 @@ export class AuthRepository {
         username: data.username,
         password: data.password,
       },
+      omit: { password: true },
     });
   }
 

@@ -18,7 +18,7 @@ export class AuthController {
   async createProduct(
     @RequestParam() body: RegisterBodyTcpRequest
   ): Promise<Response<AuthTcpResponse>> {
-    const result = (await this.authService.resgister(body)) as AuthTcpResponse;
+    const result = (await this.authService.register(body)) as AuthTcpResponse;
     return Response.success<AuthTcpResponse>(result);
   }
 }

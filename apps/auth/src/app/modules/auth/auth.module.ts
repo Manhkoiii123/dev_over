@@ -4,6 +4,7 @@ import { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './services/auth.service';
 import { PrismaModule } from '@common/database/prisma';
 import { PrismaClient as PrismaClientAuth } from '../../../../../auth/generator/client';
+import { HashingService } from '../shared/hashing.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { PrismaClient as PrismaClientAuth } from '../../../../../auth/generator/
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthRepository, AuthService],
+  providers: [AuthRepository, AuthService, HashingService],
 })
 export class AuthModule {}
