@@ -5,7 +5,7 @@ import { USER_STATUS } from '@common/constants/enum/user-status.enum';
 export class AuthResponseDto extends BaseResponseDto {
   @ApiProperty({ description: 'User full name' })
   @IsString()
-  name: string;
+  username: string;
 
   @ApiProperty({ description: 'User email' })
   @IsEmail()
