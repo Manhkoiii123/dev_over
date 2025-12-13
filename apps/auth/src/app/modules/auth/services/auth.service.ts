@@ -73,7 +73,6 @@ export class AuthService {
     userAgent,
     ip,
   }: RefreshTokenBodyTcpRequest) {
-    // try {,,
     const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
     const refreshTokenDb = await this.authRepository.findRefreshToken({
       token: refreshToken,
@@ -99,9 +98,19 @@ export class AuthService {
       newtokens,
     ]);
     return tokens;
-    // } catch (error) {
-    //   throw new UnauthorizedException(error);
-    // }
+  }
+
+  async logout(refreshToken: string) {
+    await this.tokenService.verifyRefreshToken(refreshToken);
+    const deleteRefreshToken = await this.authRepository.deleteRefreshToken(
+      refreshToken
+    );
+    await this.authRepository.updateDevice(deleteRefreshToken.deviceId, {
+      isActive: false,
+    });
+    return {
+      message: 'Logout successfully',
+    };
   }
 
   async generateTokens({ userId, deviceId }: AccessTokenPayloadCreate) {

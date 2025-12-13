@@ -13,6 +13,7 @@ import {
   RefreshTokenTcpResponse,
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
+import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 
 @Controller('auth')
 @UseInterceptors(TcpLoggingInterceptor)
@@ -43,5 +44,12 @@ export class AuthController {
       body
     )) as RefreshTokenTcpResponse;
     return Response.success<RefreshTokenTcpResponse>(result);
+  }
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.LOGOUT)
+  async logout(
+    @RequestParam() body: RefreshTokenBodyTcpRequest
+  ): Promise<Response<string>> {
+    const result = await this.authService.logout(body.refreshToken);
+    return Response.success<string>(HTTP_MESSAGE.OK);
   }
 }

@@ -114,4 +114,33 @@ export class AuthController {
       )
       .pipe(map((data) => new ResponseDto(data)));
   }
+
+  @Post('logout')
+  @ApiOkResponse({ type: ResponseDto<AuthRefreshTokenResponseDto> })
+  @ApiOperation({ summary: 'Logout' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async logout(
+    @Body() body: RefreshTokenBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.authClient
+      .send<RefreshTokenTcpResponse, RefreshTokenBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.LOGOUT,
+        {
+          data: {
+            ...body,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
 }
