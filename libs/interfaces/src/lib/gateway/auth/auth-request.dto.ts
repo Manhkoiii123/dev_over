@@ -50,3 +50,10 @@ export class LoginBodyDto {
   @MaxLength(100)
   password: string;
 }
+
+export class RefreshTokenBodyDto {
+  @ApiProperty({ description: 'Refresh token' })
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
+}

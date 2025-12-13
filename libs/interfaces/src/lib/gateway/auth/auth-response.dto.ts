@@ -32,3 +32,4 @@ export class AuthLoginResponseDto extends BaseResponseDto {
   @ApiProperty({ description: 'Refresh token' })
   refreshToken: string;
 }
+export class AuthRefreshTokenResponseDto extends AuthLoginResponseDto {}

@@ -45,4 +45,26 @@ export class AuthRepository {
   }) {
     return this.prisma.client.refreshToken.create({ data });
   }
+
+  async findRefreshToken(data: { token: string }) {
+    return await this.prisma.client.refreshToken.findFirst({
+      where: {
+        token: data.token,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async updateDevice(deviceId: number, data: Partial<CreateDeviceBodyDto>) {
+    return this.prisma.client.device.update({
+      where: { id: deviceId },
+      data,
+    });
+  }
+
+  async deleteRefreshToken(token: string) {
+    return await this.prisma.client.refreshToken.delete({ where: { token } });
+  }
 }

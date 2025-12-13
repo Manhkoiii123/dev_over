@@ -1,12 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { AuthRepository } from '../repositories/auth.repository';
 import {
   AuthTcpResponse,
   LoginBodyTcpRequest,
+  RefreshTokenBodyTcpRequest,
   RegisterBodyTcpRequest,
 } from '@common/interfaces/tcp/auth';
 import { HashingService } from '../../../shared/service/hashing.service';
@@ -33,8 +35,7 @@ export class AuthService {
     return this.authRepository.createUser(data);
   }
 
-  async login(data: LoginBodyTcpRequest & { userAgent: string; ip: string }) {
-    console.log('🚀 ~ AuthService ~ login ~ data:', data);
+  async login(data: LoginBodyTcpRequest) {
     const user = await this.authRepository.existsWithEmail(data.email);
     if (!user) {
       throw new BadRequestException('User does not exist');
@@ -65,6 +66,42 @@ export class AuthService {
     });
 
     return tokens;
+  }
+
+  async refreshToken({
+    refreshToken,
+    userAgent,
+    ip,
+  }: RefreshTokenBodyTcpRequest) {
+    // try {,,
+    const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
+    const refreshTokenDb = await this.authRepository.findRefreshToken({
+      token: refreshToken,
+    });
+    if (!refreshTokenDb) {
+      throw new UnauthorizedException('Refresh token is invalid');
+    }
+    const { deviceId } = refreshTokenDb;
+    const updateDevide = this.authRepository.updateDevice(deviceId, {
+      ip,
+      userAgent,
+    });
+    const deleteRefreshToken =
+      this.authRepository.deleteRefreshToken(refreshToken);
+
+    const newtokens = this.generateTokens({
+      userId,
+      deviceId,
+    });
+    const [, , tokens] = await Promise.all([
+      updateDevide,
+      deleteRefreshToken,
+      newtokens,
+    ]);
+    return tokens;
+    // } catch (error) {
+    //   throw new UnauthorizedException(error);
+    // }
   }
 
   async generateTokens({ userId, deviceId }: AccessTokenPayloadCreate) {

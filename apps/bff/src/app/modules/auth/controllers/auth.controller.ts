@@ -17,12 +17,16 @@ import {
   RegisterBodyDto,
   AuthLoginResponseDto,
   LoginBodyDto,
+  AuthRefreshTokenResponseDto,
+  RefreshTokenBodyDto,
 } from '@common/interfaces/gateway/auth';
 import {
   AuthTcpResponse,
   RegisterBodyTcpRequest,
   LoginBodyTcpRequest,
   LoginTcpResponse,
+  RefreshTokenTcpResponse,
+  RefreshTokenBodyTcpRequest,
 } from '@common/interfaces/tcp/auth';
 
 import { map } from 'rxjs';
@@ -70,6 +74,35 @@ export class AuthController {
     return this.authClient
       .send<LoginTcpResponse, LoginBodyTcpRequest>(
         TCP_REQUEST_MESSAGE.AUTH.LOGIN,
+        {
+          data: {
+            ...body,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Post('refresh-token')
+  @ApiOkResponse({ type: ResponseDto<AuthRefreshTokenResponseDto> })
+  @ApiOperation({ summary: 'RefreshToken' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async refreshToken(
+    @Body() body: RefreshTokenBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.authClient
+      .send<RefreshTokenTcpResponse, RefreshTokenBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.REFRESH_TOKEN,
         {
           data: {
             ...body,

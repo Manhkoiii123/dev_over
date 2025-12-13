@@ -9,6 +9,8 @@ import {
   AuthTcpResponse,
   LoginBodyTcpRequest,
   LoginTcpResponse,
+  RefreshTokenBodyTcpRequest,
+  RefreshTokenTcpResponse,
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 
@@ -31,5 +33,15 @@ export class AuthController {
   ): Promise<Response<LoginTcpResponse>> {
     const result = (await this.authService.login(body)) as LoginTcpResponse;
     return Response.success<LoginTcpResponse>(result);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.REFRESH_TOKEN)
+  async refreshToken(
+    @RequestParam() body: RefreshTokenBodyTcpRequest
+  ): Promise<Response<RefreshTokenTcpResponse>> {
+    const result = (await this.authService.refreshToken(
+      body
+    )) as RefreshTokenTcpResponse;
+    return Response.success<RefreshTokenTcpResponse>(result);
   }
 }
