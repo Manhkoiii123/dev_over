@@ -7,8 +7,10 @@ import {
   MaxLength,
   ValidateIf,
   Matches,
+  IsEnum,
 } from 'class-validator';
 import { Match } from '@common/decorators/confirm-password.decorator';
+import { TypeOfVerificationCode } from '@common/constants/enum/type-verification-code.enum';
 
 export class RegisterBodyDto {
   @ApiProperty({ description: 'User email' })
@@ -56,4 +58,19 @@ export class RefreshTokenBodyDto {
   @IsString()
   @IsNotEmpty()
   refreshToken: string;
+}
+
+export class SendOtpBodyDto {
+  @ApiProperty({ description: 'User email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({
+    description: 'Type of verification code',
+    enum: TypeOfVerificationCode,
+  })
+  @IsEnum(TypeOfVerificationCode)
+  @IsNotEmpty()
+  type: TypeOfVerificationCode;
 }

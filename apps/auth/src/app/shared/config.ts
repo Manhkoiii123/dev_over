@@ -31,6 +31,8 @@ export class EnvConfig {
 
   @IsString()
   SECRET_API_KEY: string;
+  @IsString()
+  OTP_EXPIRES_IN: `${number}${'s' | 'm' | 'h' | 'd'}`;
 }
 
 export function validateEnv(env: NodeJS.ProcessEnv) {

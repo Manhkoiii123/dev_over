@@ -49,7 +49,7 @@ export class AuthController {
   async logout(
     @RequestParam() body: RefreshTokenBodyTcpRequest
   ): Promise<Response<string>> {
-    const result = await this.authService.logout(body.refreshToken);
+    await this.authService.logout(body.refreshToken);
     return Response.success<string>(HTTP_MESSAGE.OK);
   }
 }
