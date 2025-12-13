@@ -7,11 +7,16 @@ import {
 import { IsNotEmpty, IsObject } from 'class-validator';
 export enum TCP_SERVICES {
   AUTH_SERVICE = 'TCP_AUTH_SERVICE',
+  MAIL_SERVICE = 'TCP_MAIL_SERVICE',
 }
 export class TcpConfiguration {
   @IsNotEmpty()
   @IsObject()
   TCP_AUTH_SERVICE: TcpClientOptions;
+
+  @IsNotEmpty()
+  @IsObject()
+  TCP_MAIL_SERVICE: TcpClientOptions;
 
   constructor() {
     Object.entries(TCP_SERVICES).forEach(([key, serviceName]) => {
