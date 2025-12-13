@@ -7,6 +7,8 @@ import { RequestParam } from '@common/decorators/request-param.decorator';
 import {
   RegisterBodyTcpRequest,
   AuthTcpResponse,
+  LoginBodyTcpRequest,
+  LoginTcpResponse,
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 
@@ -14,11 +16,20 @@ import { Response } from '@common/interfaces/tcp/common/response.interface';
 @UseInterceptors(TcpLoggingInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
   @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.REGISTER)
-  async createProduct(
+  async register(
     @RequestParam() body: RegisterBodyTcpRequest
   ): Promise<Response<AuthTcpResponse>> {
     const result = (await this.authService.register(body)) as AuthTcpResponse;
     return Response.success<AuthTcpResponse>(result);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.LOGIN)
+  async login(
+    @RequestParam() body: LoginBodyTcpRequest
+  ): Promise<Response<LoginTcpResponse>> {
+    const result = (await this.authService.login(body)) as LoginTcpResponse;
+    return Response.success<LoginTcpResponse>(result);
   }
 }

@@ -41,6 +41,8 @@ model User {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime?
 
+  refreshTokens               RefreshToken[]
+
   devices     Device[]
 
   @@index([deletedAt])
@@ -64,16 +66,15 @@ model Device {
 }
 
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  deviceId  Int
-  device    Device   @relation(fields: [deviceId], references: [id])
-
+  token     String   @unique @db.VarChar(1000)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([expiresAt])
-  @@index([deviceId])
 }
 
 model VerificationCode {

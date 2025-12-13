@@ -4,7 +4,9 @@ import { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './services/auth.service';
 import { PrismaModule } from '@common/database/prisma';
 import { PrismaClient as PrismaClientAuth } from '../../../../../auth/generator/client';
-import { HashingService } from '../shared/hashing.service';
+import { HashingService } from '../../shared/service/hashing.service';
+import { TokenService } from '../../shared/service/token.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -14,6 +16,12 @@ import { HashingService } from '../shared/hashing.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthRepository, AuthService, HashingService],
+  providers: [
+    AuthRepository,
+    AuthService,
+    HashingService,
+    TokenService,
+    JwtService,
+  ],
 })
 export class AuthModule {}
