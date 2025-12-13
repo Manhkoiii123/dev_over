@@ -36,3 +36,17 @@ export class RegisterBodyDto {
   @Match('password', { message: 'The passwords did not match' })
   confirmPassword: string;
 }
+
+export class LoginBodyDto {
+  @ApiProperty({ description: 'User email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ description: 'Password' })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(100)
+  password: string;
+}

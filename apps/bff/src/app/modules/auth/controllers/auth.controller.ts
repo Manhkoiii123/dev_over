@@ -1,8 +1,13 @@
 import { TCP_SERVICES } from '@common/configuration/tcp.config';
 import { ResponseDto } from '@common/interfaces/gateway/response.interface';
 import { TcpClient } from '@common/interfaces/tcp/common/tcp-client.interface';
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Headers, Inject, Ip, Post } from '@nestjs/common';
+import {
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -10,10 +15,14 @@ import { ProcessId } from '@common/decorators/processId.decorator';
 import {
   AuthResponseDto,
   RegisterBodyDto,
+  AuthLoginResponseDto,
+  LoginBodyDto,
 } from '@common/interfaces/gateway/auth';
 import {
   AuthTcpResponse,
   RegisterBodyTcpRequest,
+  LoginBodyTcpRequest,
+  LoginTcpResponse,
 } from '@common/interfaces/tcp/auth';
 
 import { map } from 'rxjs';
@@ -26,10 +35,10 @@ export class AuthController {
     private readonly authClient: TcpClient
   ) {}
 
-  @Post()
+  @Post('register')
   @ApiOkResponse({ type: ResponseDto<AuthResponseDto> })
   @ApiOperation({ summary: 'Register' })
-  async createProduct(
+  async register(
     @Body() body: RegisterBodyDto,
     @ProcessId() processId: string
   ) {
@@ -38,6 +47,35 @@ export class AuthController {
         TCP_REQUEST_MESSAGE.AUTH.REGISTER,
         {
           data: body,
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Post('login')
+  @ApiOkResponse({ type: ResponseDto<AuthLoginResponseDto> })
+  @ApiOperation({ summary: 'Login' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async login(
+    @Body() body: LoginBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.authClient
+      .send<LoginTcpResponse, LoginBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.LOGIN,
+        {
+          data: {
+            ...body,
+            userAgent,
+            ip,
+          },
           processId: processId,
         }
       )

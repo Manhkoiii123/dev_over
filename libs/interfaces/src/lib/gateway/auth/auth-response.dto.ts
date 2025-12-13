@@ -24,3 +24,11 @@ export class AuthResponseDto extends BaseResponseDto {
   @IsEnum(USER_STATUS)
   status: USER_STATUS;
 }
+
+export class AuthLoginResponseDto extends BaseResponseDto {
+  @ApiProperty({ description: 'Access token' })
+  accessToken: string;
+
+  @ApiProperty({ description: 'Refresh token' })
+  refreshToken: string;
+}
