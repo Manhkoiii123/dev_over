@@ -1,30 +1,26 @@
-import { Type } from '@nestjs/common';
-import { Prop, SchemaFactory, Virtual } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { Schema as MongooseSchema } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsDate } from 'class-validator';
 
-export class BaseSchema {
-  _id: ObjectId;
+export class BaseDto {
+  @ApiProperty({ description: 'ID of the entity' })
+  @IsNumber()
+  id: number;
 
-  // @Virtual({
-  //   get: (doc: any) => doc._id.toString(),
-  // })
-  // id: string;
+  @ApiProperty({
+    description: 'Deleted timestamp',
+    nullable: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  deletedAt?: Date | null;
 
-  @Prop({ type: Date, default: new Date() })
+  @ApiProperty({ description: 'Created timestamp' })
+  @IsDate()
   createdAt: Date;
 
-  @Prop({ type: Date, default: new Date() })
-  updatedAt: Date;
+  @ApiProperty({ description: 'Updated timestamp', required: false })
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date | null;
 }
-
-export const createSchema = <TClass = any>(
-  target: Type<TClass>
-): MongooseSchema<TClass> => {
-  const schema = SchemaFactory.createForClass(target);
-  schema.set('toJSON', { virtuals: true });
-  schema.set('toObject', { virtuals: true });
-  schema.set('timestamps', true);
-  schema.set('versionKey', false);
-  return schema;
-};

@@ -29,7 +29,7 @@ export class TypeOrmConfiguration {
 
   constructor(data?: Partial<TypeOrmConfiguration>) {
     this.HOST = data?.HOST || process.env['TYPEORM_HOST'] || 'localhost';
-    this.PORT = data?.PORT || Number(process.env['TYPEORM_PORT']) || 5433;
+    this.PORT = data?.PORT || Number(process.env['TYPEORM_PORT']) || 5434;
     this.USERNAME =
       data?.USERNAME || process.env['TYPEORM_USERNAME'] || 'postgres';
     this.PASSWORD =
