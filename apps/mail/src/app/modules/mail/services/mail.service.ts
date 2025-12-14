@@ -55,27 +55,6 @@ export class MailService {
   }
 
   async sendOtp(data: SendOtpBodyTcpRequest) {
-    // const user = await this.mailRepository.existsWithEmail(data.email);
-    // if (!user) {
-    //   throw new BadRequestException('User does not exist');
-    // }
-    // if (data.type === TypeOfVerificationCode.EMAIL_CONFIRMATION && user) {
-    //   throw new UnprocessableEntityException([
-    //     {
-    //       message: 'Error.EmailExists',
-    //       path: 'refreshToken',
-    //     },
-    //   ]);
-    // }
-    // if (data.type === TypeOfVerificationCode.PASSWORD_RESET && !user) {
-    //   throw new UnprocessableEntityException([
-    //     {
-    //       message: 'Error.EmailNotFound',
-    //       path: 'refreshToken',
-    //     },
-    //   ]);
-    // }
-
     const code = generateOTP();
     await this.mailRepository.createVerificationCode({
       email: data.email,
