@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { MailRepository } from '../repositories/mail.repository';
-import { SendOtpBodyTcpRequest } from '@common/interfaces/tcp/auth';
+import { SendOtpBodyTcpRequest } from '@common/interfaces/tcp/verification';
 import { generateOTP } from '@common/utils/generate-otp.utils';
 import ms from 'ms';
 import { addMilliseconds } from 'date-fns';

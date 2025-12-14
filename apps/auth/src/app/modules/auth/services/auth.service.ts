@@ -6,11 +6,9 @@ import {
 } from '@nestjs/common';
 import { AuthRepository } from '../repositories/auth.repository';
 import {
-  AuthTcpResponse,
   LoginBodyTcpRequest,
   RefreshTokenBodyTcpRequest,
   RegisterBodyTcpRequest,
-  SendOtpBodyTcpRequest,
 } from '@common/interfaces/tcp/auth';
 import { HashingService } from '../../../shared/service/hashing.service';
 import { AccessTokenPayloadCreate } from '../../../shared/types/jwt.type';

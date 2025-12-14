@@ -5,7 +5,7 @@ import { MailService } from '../services/mail.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { RequestParam } from '@common/decorators/request-param.decorator';
-import { SendOtpBodyTcpRequest } from '@common/interfaces/tcp/auth';
+import { SendOtpBodyTcpRequest } from '@common/interfaces/tcp/verification';
 import { ValidateVerificationCodeBodyTcpRequest } from '@common/interfaces/tcp/verification';
 
 @Controller('mail')

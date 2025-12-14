@@ -2,10 +2,12 @@ import {
   LoginBodyDto,
   RefreshTokenBodyDto,
   RegisterBodyDto,
-  SendOtpBodyDto,
 } from '../../gateway/auth';
 
-export type RegisterBodyTcpRequest = RegisterBodyDto;
+export type RegisterBodyTcpRequest = RegisterBodyDto & {
+  userAgent: string;
+  ip: string;
+};
 
 export type LoginBodyTcpRequest = LoginBodyDto & {
   userAgent: string;
@@ -16,5 +18,3 @@ export type RefreshTokenBodyTcpRequest = RefreshTokenBodyDto & {
   userAgent: string;
   ip: string;
 };
-
-export type SendOtpBodyTcpRequest = SendOtpBodyDto;

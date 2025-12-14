@@ -56,3 +56,18 @@ export class ValidateVerificationCodeDto {
   @Length(6, 6, { message: 'Code must be exactly 6 characters' })
   code: string;
 }
+
+export class SendOtpBodyDto {
+  @ApiProperty({ description: 'User email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({
+    description: 'Type of verification code',
+    enum: TypeOfVerificationCode,
+  })
+  @IsEnum(TypeOfVerificationCode)
+  @IsNotEmpty()
+  type: TypeOfVerificationCode;
+}

@@ -1,6 +1,9 @@
 export class Request<T> {
   processId?: string;
-  data?: T;
+  data?: T & {
+    userAgent: string;
+    ip: string;
+  };
   constructor(data: Partial<Request<T>>) {
     Object.assign(this, data);
   }
