@@ -29,16 +29,14 @@ import {
   RefreshTokenBodyTcpRequest,
 } from '@common/interfaces/tcp/auth';
 
-import { map, switchMap } from 'rxjs';
+import { map } from 'rxjs';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     @Inject(TCP_SERVICES.AUTH_SERVICE)
-    private readonly authClient: TcpClient,
-    @Inject(TCP_SERVICES.MAIL_SERVICE)
-    private readonly mailClient: TcpClient
+    private readonly authClient: TcpClient
   ) {}
 
   @Post('register')
@@ -56,16 +54,7 @@ export class AuthController {
           processId: processId,
         }
       )
-      .pipe(
-        switchMap((authResult) => {
-          return this.mailClient
-            .send(TCP_REQUEST_MESSAGE.MAIL.SEND_OTP, {
-              data: { email: body.email, type: 'EMAIL_CONFIRMATION' },
-              processId,
-            })
-            .pipe(map(() => new ResponseDto(authResult)));
-        })
-      );
+      .pipe(map((data) => new ResponseDto(data)));
   }
 
   @Post('login')

@@ -36,3 +36,23 @@ export class VerificationCodeDto {
   @IsDate()
   expiresAt: Date;
 }
+
+export class ValidateVerificationCodeDto {
+  @ApiProperty({ description: 'User email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({
+    description: 'Type of verification code',
+    enum: TypeOfVerificationCode,
+  })
+  @IsEnum(TypeOfVerificationCode)
+  @IsNotEmpty()
+  type: TypeOfVerificationCode;
+
+  @ApiProperty({ description: 'Verification code (6 characters)' })
+  @IsString()
+  @Length(6, 6, { message: 'Code must be exactly 6 characters' })
+  code: string;
+}

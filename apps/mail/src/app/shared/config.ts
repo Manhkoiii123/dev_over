@@ -18,19 +18,10 @@ export class EnvConfig {
   DATABASE_URL: string;
 
   @IsString()
-  ACCESS_TOKEN_SECRET: string;
+  OTP_EXPIRES_IN: `${number}${'s' | 'm' | 'h' | 'd'}`;
 
   @IsString()
-  ACCESS_TOKEN_EXPIRES_IN: `${number}${'s' | 'm' | 'h' | 'd'}`;
-
-  @IsString()
-  REFRESH_TOKEN_SECRET: string;
-
-  @IsString()
-  REFRESH_TOKEN_EXPIRES_IN: `${number}${'s' | 'm' | 'h' | 'd'}`;
-
-  @IsString()
-  SECRET_API_KEY: string;
+  RESEND_API_KEY: string;
 }
 
 export function validateEnv(env: NodeJS.ProcessEnv) {
