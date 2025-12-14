@@ -30,5 +30,6 @@ model VerificationCode {
   createdAt DateTime @default(now())
 
   @@unique([email, type, code])
+  @@unique([email,type])
   @@index([expiresAt])
 }

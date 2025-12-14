@@ -17,8 +17,8 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     const config = new DocumentBuilder()
-      .setTitle('Invoice BFF API')
-      .setDescription('The BnT API description')
+      .setTitle('Devover Flow BFF API')
+      .setDescription('The Devover Flow API description')
       .setVersion('1.0.0')
       .addBearerAuth({
         description: `Default JWT Authorization`,

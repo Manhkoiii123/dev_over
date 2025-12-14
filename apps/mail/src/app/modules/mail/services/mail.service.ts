@@ -73,4 +73,42 @@ export class MailService {
       message: 'OTP sent successfully',
     };
   }
+
+  async resendOtp(data: SendOtpBodyTcpRequest) {
+    const verificationCode = await this.mailRepository.existsWithEmail(
+      data.email
+    );
+    if (verificationCode) {
+      throw new BadRequestException([
+        {
+          message: 'Error.OTPSentRecently',
+          path: 'email',
+        },
+      ]);
+    }
+
+    await this.mailRepository.deleteVerificationCode({
+      email_type: {
+        email: data.email,
+        type: data.type,
+      },
+    });
+    const code = generateOTP();
+    await this.mailRepository.createVerificationCode({
+      email: data.email,
+      code,
+      type: data.type,
+      expiresAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRES_IN)),
+    });
+    const { data: _, error } = await this.emailService.sendOTP({
+      email: data.email,
+      code,
+    });
+    if (error) {
+      throw new UnprocessableEntityException('Failed to send email');
+    }
+    return {
+      message: 'OTP sent successfully',
+    };
+  }
 }

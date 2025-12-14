@@ -43,4 +43,20 @@ export class MailRepository {
       },
     });
   }
+
+  async deleteVerificationCode(data: {
+    email_type: {
+      email: string;
+      type: TypeOfVerificationCode;
+    };
+  }) {
+    return await this.prisma.client.verificationCode.delete({
+      where: {
+        email_type: {
+          email: data.email_type.email,
+          type: data.email_type.type,
+        },
+      },
+    });
+  }
 }

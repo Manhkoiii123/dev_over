@@ -28,4 +28,12 @@ export class MailController {
     const result = await this.mailService.validateVerificationCode(body);
     return Response.success<{ message: string }>(result);
   }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.MAIL.RESEND_OTP)
+  async resendOtp(
+    @RequestParam() body: SendOtpBodyTcpRequest
+  ): Promise<Response<{ message: string }>> {
+    const result = await this.mailService.resendOtp(body);
+    return Response.success<{ message: string }>(result);
+  }
 }
