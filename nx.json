@@ -42,7 +42,8 @@
       "exclude": [
         "apps/invoice-e2e/**/*",
         "apps/bff-e2e/**/*",
-        "apps/auth-e2e/**/*"
+        "apps/auth-e2e/**/*",
+        "apps/mail-e2e/**/*"
       ]
     }
   ]

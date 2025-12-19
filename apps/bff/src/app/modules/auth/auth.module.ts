@@ -5,7 +5,10 @@ import { AuthController } from './controllers/auth.controller';
 
 @Module({
   imports: [
-    ClientsModule.registerAsync([TcpProvider(TCP_SERVICES.AUTH_SERVICE)]),
+    ClientsModule.registerAsync([
+      TcpProvider(TCP_SERVICES.AUTH_SERVICE),
+      TcpProvider(TCP_SERVICES.MAIL_SERVICE),
+    ]),
   ],
   controllers: [AuthController],
   providers: [],

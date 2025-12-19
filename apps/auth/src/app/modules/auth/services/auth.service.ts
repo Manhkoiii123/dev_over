@@ -6,20 +6,15 @@ import {
 } from '@nestjs/common';
 import { AuthRepository } from '../repositories/auth.repository';
 import {
-  AuthTcpResponse,
   LoginBodyTcpRequest,
   RefreshTokenBodyTcpRequest,
   RegisterBodyTcpRequest,
-  SendOtpBodyTcpRequest,
 } from '@common/interfaces/tcp/auth';
 import { HashingService } from '../../../shared/service/hashing.service';
 import { AccessTokenPayloadCreate } from '../../../shared/types/jwt.type';
 import { TokenService } from '../../../shared/service/token.service';
-import { TypeOfVerificationCode } from '@common/constants/enum/type-verification-code.enum';
-import { generateOTP } from '@common/utils/generate-otp.utils';
-import envConfig from '../../../shared/config';
-import ms from 'ms';
-import { addMilliseconds } from 'date-fns';
+import { USER_STATUS } from '@common/constants/enum/user-status.enum';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,43 +22,6 @@ export class AuthService {
     private readonly hashingService: HashingService,
     private readonly tokenService: TokenService
   ) {}
-
-  async validateVerificationCode({
-    email,
-    code,
-    type,
-  }: {
-    email: string;
-    code: string;
-    type: TypeOfVerificationCode;
-  }) {
-    const verifycationCode =
-      await this.authRepository.findUniqueVerificationCode({
-        email_type_code: {
-          email: email,
-          type: type,
-          code: code,
-        },
-      });
-
-    if (!verifycationCode) {
-      throw new UnprocessableEntityException([
-        {
-          message: 'Error.InvalidOTP',
-          path: 'code',
-        },
-      ]);
-    }
-    if (verifycationCode.expiresAt < new Date()) {
-      throw new UnprocessableEntityException([
-        {
-          message: 'Error.OTPExpired',
-          path: 'code',
-        },
-      ]);
-    }
-    return verifycationCode;
-  }
 
   async register(data: RegisterBodyTcpRequest) {
     const user = await this.authRepository.existsWithEmailOrUsername(
@@ -83,6 +41,9 @@ export class AuthService {
     const user = await this.authRepository.existsWithEmail(data.email);
     if (!user) {
       throw new BadRequestException('User does not exist');
+    }
+    if (user.status !== USER_STATUS.ACTIVE) {
+      throw new UnauthorizedException('User is not active');
     }
     const isPasswordValid = await this.hashingService.compare(
       data.password,
@@ -157,40 +118,6 @@ export class AuthService {
     };
   }
 
-  async sendOtp(data: SendOtpBodyTcpRequest) {
-    const user = await this.authRepository.existsWithEmail(data.email);
-    if (!user) {
-      throw new BadRequestException('User does not exist');
-    }
-    if (data.type === TypeOfVerificationCode.EMAIL_CONFIRMATION && user) {
-      throw new UnprocessableEntityException([
-        {
-          message: 'Error.EmailExists',
-          path: 'refreshToken',
-        },
-      ]);
-    }
-    if (data.type === TypeOfVerificationCode.PASSWORD_RESET && !user) {
-      throw new UnprocessableEntityException([
-        {
-          message: 'Error.EmailNotFound',
-          path: 'refreshToken',
-        },
-      ]);
-    }
-
-    const code = generateOTP();
-    await this.authRepository.createVerificationCode({
-      email: data.email,
-      code,
-      type: data.type,
-      expiresAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRES_IN)),
-    });
-    return {
-      message: 'OTP sent successfully',
-    };
-  }
-
   async generateTokens({ userId, deviceId }: AccessTokenPayloadCreate) {
     const [accessToken, refreshToken] = await Promise.all([
       this.tokenService.signAccessToken({
@@ -212,5 +139,9 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async activeUser(email: string) {
+    return this.authRepository.activeUser(email);
   }
 }

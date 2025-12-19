@@ -17,6 +17,7 @@ datasource db {
 enum UserStatus {
   ACTIVE
   BANNED
+  PENDING
 }
 
 enum VerificationCodeType {
@@ -35,7 +36,7 @@ model User {
   bio         String?
   location    String?
   reputation  Int        @default(0)
-  status      UserStatus @default(ACTIVE)
+  status      UserStatus @default(PENDING)
 
   deletedAt   DateTime?
   createdAt   DateTime   @default(now())
@@ -77,14 +78,4 @@ model RefreshToken {
   @@index([expiresAt])
 }
 
-model VerificationCode {
-  id        Int      @id @default(autoincrement())
-  email     String
-  code      String
-  type      VerificationCodeType
-  expiresAt DateTime
-  createdAt DateTime @default(now())
 
-  @@unique([email, type, code])
-  @@index([expiresAt])
-}

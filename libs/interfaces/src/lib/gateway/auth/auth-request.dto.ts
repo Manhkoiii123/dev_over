@@ -59,18 +59,3 @@ export class RefreshTokenBodyDto {
   @IsNotEmpty()
   refreshToken: string;
 }
-
-export class SendOtpBodyDto {
-  @ApiProperty({ description: 'User email' })
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty({
-    description: 'Type of verification code',
-    enum: TypeOfVerificationCode,
-  })
-  @IsEnum(TypeOfVerificationCode)
-  @IsNotEmpty()
-  type: TypeOfVerificationCode;
-}

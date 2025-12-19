@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CONFIGURATION, TConfiguration } from '../configuration';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './modules/auth/auth.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -9,7 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
       isGlobal: true,
       load: [() => CONFIGURATION],
     }),
-    AuthModule,
+    MailModule,
   ],
 })
 export class AppModule {

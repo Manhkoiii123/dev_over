@@ -8,17 +8,19 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationTypes } from 'class-validator';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { corsConfig } from '@common/configuration/cors.config';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
+    app.enableCors(corsConfig);
     const globalPrefix = AppModule.CONFIGURATION.GLOBAL_PREFIX;
     app.setGlobalPrefix(globalPrefix);
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     const config = new DocumentBuilder()
-      .setTitle('Invoice BFF API')
-      .setDescription('The BnT API description')
+      .setTitle('Devover Flow BFF API')
+      .setDescription('The Devover Flow API description')
       .setVersion('1.0.0')
       .addBearerAuth({
         description: `Default JWT Authorization`,
