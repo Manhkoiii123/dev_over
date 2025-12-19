@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient as PrismaClientAuth } from '../../../../../../auth/generator/client';
 import { RegisterBodyTcpRequest } from '@common/interfaces/tcp/auth';
 import { CreateDeviceBodyDto } from '@common/interfaces/gateway/device';
+import { USER_STATUS } from '@common/constants/enum/user-status.enum';
 @Injectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService<PrismaClientAuth>) {}
@@ -66,5 +67,12 @@ export class AuthRepository {
 
   async deleteRefreshToken(token: string) {
     return await this.prisma.client.refreshToken.delete({ where: { token } });
+  }
+
+  async activeUser(email: string) {
+    return this.prisma.client.user.updateMany({
+      where: { email },
+      data: { status: USER_STATUS.ACTIVE },
+    });
   }
 }

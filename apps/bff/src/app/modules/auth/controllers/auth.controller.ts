@@ -227,6 +227,19 @@ export class AuthController {
           processId: processId,
         }
       )
-      .pipe(map((data) => new ResponseDto(data)));
+      .pipe(
+        switchMap((authResult) => {
+          return this.authClient
+            .send(TCP_REQUEST_MESSAGE.AUTH.ACTIVE_USER, {
+              data: {
+                email: body.email,
+                ip,
+                userAgent,
+              },
+              processId,
+            })
+            .pipe(map(() => new ResponseDto(authResult)));
+        })
+      );
   }
 }

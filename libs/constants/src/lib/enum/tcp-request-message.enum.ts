@@ -3,6 +3,7 @@ enum AUTH {
   LOGIN = 'auth.login',
   LOGOUT = 'auth.logout',
   REFRESH_TOKEN = 'auth.refresh_token',
+  ACTIVE_USER = 'auth.active_user',
 }
 enum MAIL {
   SEND = 'mail.send',

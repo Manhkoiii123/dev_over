@@ -8,10 +8,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationTypes } from 'class-validator';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { corsConfig } from '@common/configuration/cors.config';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
+    app.enableCors(corsConfig);
     const globalPrefix = AppModule.CONFIGURATION.GLOBAL_PREFIX;
     app.setGlobalPrefix(globalPrefix);
     app.useGlobalPipes(new ValidationPipe({ transform: true }));

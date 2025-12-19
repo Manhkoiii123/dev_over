@@ -52,4 +52,11 @@ export class AuthController {
     await this.authService.logout(body.refreshToken);
     return Response.success<string>(HTTP_MESSAGE.OK);
   }
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.ACTIVE_USER)
+  async activeUser(
+    @RequestParam() body: { email: string }
+  ): Promise<Response<string>> {
+    await this.authService.activeUser(body.email);
+    return Response.success<string>(HTTP_MESSAGE.OK);
+  }
 }

@@ -13,6 +13,7 @@ import {
 import { HashingService } from '../../../shared/service/hashing.service';
 import { AccessTokenPayloadCreate } from '../../../shared/types/jwt.type';
 import { TokenService } from '../../../shared/service/token.service';
+import { USER_STATUS } from '@common/constants/enum/user-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +41,9 @@ export class AuthService {
     const user = await this.authRepository.existsWithEmail(data.email);
     if (!user) {
       throw new BadRequestException('User does not exist');
+    }
+    if (user.status !== USER_STATUS.ACTIVE) {
+      throw new UnauthorizedException('User is not active');
     }
     const isPasswordValid = await this.hashingService.compare(
       data.password,
@@ -135,5 +139,9 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async activeUser(email: string) {
+    return this.authRepository.activeUser(email);
   }
 }

@@ -75,18 +75,6 @@ export class MailService {
   }
 
   async resendOtp(data: SendOtpBodyTcpRequest) {
-    const verificationCode = await this.mailRepository.existsWithEmail(
-      data.email
-    );
-    if (verificationCode) {
-      throw new BadRequestException([
-        {
-          message: 'Error.OTPSentRecently',
-          path: 'email',
-        },
-      ]);
-    }
-
     await this.mailRepository.deleteVerificationCode({
       email_type: {
         email: data.email,
