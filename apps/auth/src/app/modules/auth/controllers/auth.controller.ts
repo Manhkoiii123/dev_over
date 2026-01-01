@@ -14,11 +14,15 @@ import {
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
+import { GoogleService } from '../../../shared/service/google.service';
 
 @Controller('auth')
 @UseInterceptors(TcpLoggingInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly googleService: GoogleService
+  ) {}
 
   @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.REGISTER)
   async register(
@@ -58,5 +62,31 @@ export class AuthController {
   ): Promise<Response<string>> {
     await this.authService.activeUser(body.email);
     return Response.success<string>(HTTP_MESSAGE.OK);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.GET_AUTHORIZATION_URL)
+  async getAuthorizationUrl(
+    @RequestParam() body: { userAgent: string; ip: string }
+  ): Promise<Response<string>> {
+    const result = await this.googleService.getAuthorizationUrl(body);
+    return Response.success<string>(result.url);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.GOOGLE_CALLBACK)
+  async googleCallback(
+    @RequestParam()
+    body: {
+      code: string;
+      state: string;
+      userAgent: string;
+      ip: string;
+    }
+  ): Promise<Response<LoginTcpResponse>> {
+    console.log('🚀 ~ AuthController ~ googleCallback ~ code:', body.code);
+    const result = await this.googleService.googleCallback({
+      code: body.code,
+      state: body.state,
+    });
+    return Response.success<LoginTcpResponse>(result as LoginTcpResponse);
   }
 }

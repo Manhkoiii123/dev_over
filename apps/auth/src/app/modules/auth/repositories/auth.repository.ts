@@ -26,6 +26,13 @@ export class AuthRepository {
     });
   }
 
+  async findUserByEmail(email: string) {
+    return this.prisma.client.user.findUnique({
+      where: { email },
+      omit: { password: true },
+    });
+  }
+
   async existsWithEmailOrUsername(email: string, username: string) {
     return this.prisma.client.user.findFirst({
       where: {

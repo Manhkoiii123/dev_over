@@ -1,11 +1,23 @@
 import { TCP_SERVICES } from '@common/configuration/tcp.config';
 import { ResponseDto } from '@common/interfaces/gateway/response.interface';
 import { TcpClient } from '@common/interfaces/tcp/common/tcp-client.interface';
-import { Body, Controller, Headers, Inject, Ip, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Inject,
+  Ip,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -19,6 +31,7 @@ import {
   LoginBodyDto,
   AuthRefreshTokenResponseDto,
   RefreshTokenBodyDto,
+  GetOAuthAuthorizationUrlResponseDto,
 } from '@common/interfaces/gateway/auth';
 import {
   AuthTcpResponse,
@@ -27,6 +40,9 @@ import {
   LoginTcpResponse,
   RefreshTokenTcpResponse,
   RefreshTokenBodyTcpRequest,
+  GoogleOAuthUrlTcpResponse,
+  GoogleAuthUrlTcpRequest,
+  GoogleCallbackTcpRequest,
 } from '@common/interfaces/tcp/auth';
 
 import {
@@ -34,7 +50,7 @@ import {
   ValidateVerificationCodeBodyTcpRequest,
 } from '@common/interfaces/tcp/verification';
 
-import { map, switchMap } from 'rxjs';
+import { lastValueFrom, map, switchMap } from 'rxjs';
 import {
   SendOtpBodyDto,
   ValidateVerificationCodeDto,
@@ -241,5 +257,82 @@ export class AuthController {
             .pipe(map(() => new ResponseDto(authResult)));
         })
       );
+  }
+
+  @Get('google/authorization-url')
+  @ApiOkResponse({ type: ResponseDto<GetOAuthAuthorizationUrlResponseDto> })
+  @ApiOperation({ summary: 'Get Google Authorization URL' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async getAuthorizationUrl(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.authClient
+      .send<GoogleOAuthUrlTcpResponse, GoogleAuthUrlTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.GET_AUTHORIZATION_URL,
+        {
+          data: {
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Get('google/callback')
+  @ApiOperation({ summary: 'Google OAuth Callback' })
+  @ApiQuery({
+    name: 'code',
+    required: true,
+    description: 'Authorization code from Google',
+  })
+  @ApiQuery({
+    name: 'state',
+    required: true,
+    description: 'State parameter for security',
+  })
+  async googleCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Res() res: Response
+  ) {
+    const clientRedirectUri = 'http://localhost:3000/auth/google/callback';
+
+    try {
+      const result = await lastValueFrom(
+        this.authClient.send<LoginTcpResponse, GoogleCallbackTcpRequest>(
+          TCP_REQUEST_MESSAGE.AUTH.GOOGLE_CALLBACK,
+          {
+            data: {
+              code,
+              state,
+              userAgent,
+              ip,
+            },
+            processId: processId,
+          }
+        )
+      );
+
+      const { accessToken, refreshToken } = result.data;
+      return res.redirect(
+        `${clientRedirectUri}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.redirect(
+        `${clientRedirectUri}?error=${encodeURIComponent(message)}`
+      );
+    }
   }
 }

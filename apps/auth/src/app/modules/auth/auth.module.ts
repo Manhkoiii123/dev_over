@@ -7,6 +7,7 @@ import { PrismaClient } from '../../../../generator/client';
 import { HashingService } from '../../shared/service/hashing.service';
 import { TokenService } from '../../shared/service/token.service';
 import { JwtService } from '@nestjs/jwt';
+import { GoogleService } from '../../shared/service/google.service';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JwtService } from '@nestjs/jwt';
     HashingService,
     TokenService,
     JwtService,
+    GoogleService,
   ],
 })
 export class AuthModule {}

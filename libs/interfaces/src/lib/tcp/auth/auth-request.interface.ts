@@ -18,3 +18,15 @@ export type RefreshTokenBodyTcpRequest = RefreshTokenBodyDto & {
   userAgent: string;
   ip: string;
 };
+
+export type GoogleAuthUrlTcpRequest = {
+  userAgent: string;
+  ip: string;
+};
+
+export type GoogleCallbackTcpRequest = {
+  code: string;
+  state: string;
+  userAgent: string;
+  ip: string;
+};

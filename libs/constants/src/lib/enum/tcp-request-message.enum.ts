@@ -4,6 +4,8 @@ enum AUTH {
   LOGOUT = 'auth.logout',
   REFRESH_TOKEN = 'auth.refresh_token',
   ACTIVE_USER = 'auth.active_user',
+  GET_AUTHORIZATION_URL = 'auth.get_authorization_url',
+  GOOGLE_CALLBACK = 'auth.google_callback',
 }
 enum MAIL {
   SEND = 'mail.send',

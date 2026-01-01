@@ -4,12 +4,25 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 
+const envPath = path.resolve('apps/auth/.env');
+
+console.log('=== ENV DEBUG ===');
+console.log('Current working directory:', process.cwd());
+console.log('Resolved env path:', envPath);
+console.log('Env file exists:', fs.existsSync(envPath));
+
 dotenv.config({
-  path: '.env',
+  path: envPath,
 });
 
-if (!fs.existsSync(path.resolve('.env'))) {
-  console.log('.env file not found, create one');
+console.log(
+  'GOOGLE_CLIENT_ID loaded:',
+  process.env.GOOGLE_CLIENT_ID ? 'YES' : 'NO'
+);
+console.log('=================');
+
+if (!fs.existsSync(envPath)) {
+  console.log(`${envPath} file not found, create one`);
   process.exit(1);
 }
 
@@ -31,6 +44,14 @@ export class EnvConfig {
 
   @IsString()
   SECRET_API_KEY: string;
+  @IsString()
+  GOOGLE_CLIENT_ID: string;
+  @IsString()
+  GOOGLE_CLIENT_SECRET: string;
+  @IsString()
+  GOOGLE_REDIRECT_URI: string;
+  @IsString()
+  GOOGLE_CLIENT_REDIRECT_URI: string;
 }
 
 export function validateEnv(env: NodeJS.ProcessEnv) {
@@ -52,4 +73,9 @@ export function validateEnv(env: NodeJS.ProcessEnv) {
 }
 
 const envConfig = validateEnv(process.env);
+
+console.log('=== ENVCONFIG DEBUG ===');
+console.log('envConfig.GOOGLE_CLIENT_ID:', envConfig.GOOGLE_CLIENT_ID);
+console.log('=======================');
+
 export default envConfig;
