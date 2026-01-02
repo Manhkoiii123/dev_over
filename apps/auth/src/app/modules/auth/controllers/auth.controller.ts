@@ -11,6 +11,7 @@ import {
   LoginTcpResponse,
   RefreshTokenBodyTcpRequest,
   RefreshTokenTcpResponse,
+  ResetPasswordTcpRequest,
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
@@ -87,5 +88,14 @@ export class AuthController {
       state: body.state,
     });
     return Response.success<LoginTcpResponse>(result as LoginTcpResponse);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.RESET_PASSWORD)
+  async resetPassword(
+    @RequestParam()
+    body: ResetPasswordTcpRequest
+  ): Promise<Response<string>> {
+    const result = await this.authService.resetPassword(body);
+    return Response.success<string>(result);
   }
 }

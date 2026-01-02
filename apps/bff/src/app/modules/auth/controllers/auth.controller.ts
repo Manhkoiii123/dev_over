@@ -32,6 +32,7 @@ import {
   AuthRefreshTokenResponseDto,
   RefreshTokenBodyDto,
   GetOAuthAuthorizationUrlResponseDto,
+  ResetPasswordBodyDto,
 } from '@common/interfaces/gateway/auth';
 import {
   AuthTcpResponse,
@@ -50,6 +51,7 @@ import {
   SendOtpBodyTcpRequest,
   ValidateVerificationCodeBodyTcpRequest,
 } from '@common/interfaces/tcp/verification';
+import { ResetPasswordTcpRequest } from '@common/interfaces/tcp/auth';
 
 import { lastValueFrom, map, switchMap } from 'rxjs';
 import {
@@ -57,6 +59,7 @@ import {
   SendOtpBodyDto,
   ValidateVerificationCodeDto,
 } from '@common/interfaces/gateway/verification';
+import { TypeOfVerificationCode } from '@common/constants/enum/type-verification-code.enum';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -361,5 +364,47 @@ export class AuthController {
         `${clientRedirectUri}?error=${encodeURIComponent(message)}`
       );
     }
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password' })
+  @ApiOkResponse({ type: ResponseDto<string> })
+  async resetPassword(
+    @Body() body: ResetPasswordBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.mailClient
+      .send<{ message: string }, ValidateVerificationCodeBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.MAIL.VALIDATE_OTP,
+        {
+          data: {
+            email: body.email,
+            code: body.code,
+            type: TypeOfVerificationCode.PASSWORD_RESET,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(
+        switchMap((authResult) => {
+          return this.authClient
+            .send<{ message: string }, ResetPasswordTcpRequest>(
+              TCP_REQUEST_MESSAGE.AUTH.RESET_PASSWORD,
+              {
+                data: {
+                  ...body,
+                  ip,
+                  userAgent,
+                },
+                processId,
+              }
+            )
+            .pipe(map(() => new ResponseDto(authResult)));
+        })
+      );
   }
 }

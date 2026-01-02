@@ -9,6 +9,7 @@ import {
   LoginBodyTcpRequest,
   RefreshTokenBodyTcpRequest,
   RegisterBodyTcpRequest,
+  ResetPasswordTcpRequest,
 } from '@common/interfaces/tcp/auth';
 import { HashingService } from '../../../shared/service/hashing.service';
 import { AccessTokenPayloadCreate } from '../../../shared/types/jwt.type';
@@ -143,5 +144,22 @@ export class AuthService {
 
   async activeUser(email: string) {
     return this.authRepository.activeUser(email);
+  }
+
+  async resetPassword(body: ResetPasswordTcpRequest) {
+    const { password, email } = body;
+
+    const hashPass = await this.hashingService.hash(password);
+
+    const user = await this.authRepository.existsWithEmail(email);
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    await this.authRepository.updateUser(user.id, {
+      password: hashPass,
+    });
+
+    return 'Password updated successfully';
   }
 }
