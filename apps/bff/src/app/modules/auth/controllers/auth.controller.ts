@@ -46,12 +46,14 @@ import {
 } from '@common/interfaces/tcp/auth';
 
 import {
+  ForgotPasswordTcpRequest,
   SendOtpBodyTcpRequest,
   ValidateVerificationCodeBodyTcpRequest,
 } from '@common/interfaces/tcp/verification';
 
 import { lastValueFrom, map, switchMap } from 'rxjs';
 import {
+  ForgotPasswordBodyDto,
   SendOtpBodyDto,
   ValidateVerificationCodeDto,
 } from '@common/interfaces/gateway/verification';
@@ -213,6 +215,31 @@ export class AuthController {
     return this.mailClient
       .send<{ message: string }, SendOtpBodyTcpRequest>(
         TCP_REQUEST_MESSAGE.MAIL.RESEND_OTP,
+        {
+          data: { ...body, userAgent, ip },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Post('send-link-reset-password')
+  @ApiOkResponse({ type: ResponseDto<{ message: string }> })
+  @ApiOperation({ summary: 'Send link reset password' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async sendLinkResetPassword(
+    @Body() body: ForgotPasswordBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.mailClient
+      .send<{ message: string }, ForgotPasswordTcpRequest>(
+        TCP_REQUEST_MESSAGE.MAIL.SEND_LINK_FORGOT_PASSWORD,
         {
           data: { ...body, userAgent, ip },
           processId: processId,

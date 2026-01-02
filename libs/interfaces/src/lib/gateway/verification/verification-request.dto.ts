@@ -6,8 +6,11 @@ import {
   IsString,
   Length,
   IsDate,
+  MinLength,
+  MaxLength,
 } from 'class-validator';
 import { TypeOfVerificationCode } from '@common/constants/enum/type-verification-code.enum';
+import { Match } from '@common/decorators/confirm-password.decorator';
 
 export class VerificationCodeDto {
   @ApiProperty({ description: 'User email' })
@@ -70,4 +73,11 @@ export class SendOtpBodyDto {
   @IsEnum(TypeOfVerificationCode)
   @IsNotEmpty()
   type: TypeOfVerificationCode;
+}
+
+export class ForgotPasswordBodyDto {
+  @ApiProperty({ description: 'User email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }

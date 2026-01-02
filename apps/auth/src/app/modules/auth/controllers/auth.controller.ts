@@ -82,7 +82,6 @@ export class AuthController {
       ip: string;
     }
   ): Promise<Response<LoginTcpResponse>> {
-    console.log('🚀 ~ AuthController ~ googleCallback ~ code:', body.code);
     const result = await this.googleService.googleCallback({
       code: body.code,
       state: body.state,

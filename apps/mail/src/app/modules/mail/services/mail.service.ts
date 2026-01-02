@@ -10,7 +10,10 @@ import { generateOTP } from '@common/utils/generate-otp.utils';
 import ms from 'ms';
 import { addMilliseconds } from 'date-fns';
 import envConfig from '../../../shared/config';
-import { ValidateVerificationCodeBodyTcpRequest } from '@common/interfaces/tcp/verification';
+import {
+  ValidateVerificationCodeBodyTcpRequest,
+  ForgotPasswordTcpRequest,
+} from '@common/interfaces/tcp/verification';
 import { EmailService } from '../../../shared/services/email.service';
 
 @Injectable()
@@ -97,6 +100,26 @@ export class MailService {
     }
     return {
       message: 'OTP sent successfully',
+    };
+  }
+
+  async sendLinkForgotPassword(body: ForgotPasswordTcpRequest) {
+    const code = generateOTP();
+    await this.mailRepository.createVerificationCode({
+      email: body.email,
+      code,
+      type: TypeOfVerificationCode.PASSWORD_RESET,
+      expiresAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRES_IN)),
+    });
+    const { data: _, error } = await this.emailService.sendLinkForgotPassword({
+      email: body.email,
+      code,
+    });
+    if (error) {
+      throw new BadRequestException('Failed to send email');
+    }
+    return {
+      message: 'Email sent successfully',
     };
   }
 }

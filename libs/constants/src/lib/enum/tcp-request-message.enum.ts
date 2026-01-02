@@ -12,6 +12,7 @@ enum MAIL {
   SEND_OTP = 'mail.send_otp',
   VALIDATE_OTP = 'mail.validate_otp',
   RESEND_OTP = 'mail.resend_otp',
+  SEND_LINK_FORGOT_PASSWORD = 'mail.send_link_forgot_password',
 }
 export const TCP_REQUEST_MESSAGE = {
   AUTH,
