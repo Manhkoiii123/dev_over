@@ -7,7 +7,17 @@
     "nx:reset": "nx reset",
     "nx:run-many": "nx run-many",
     "dev": "pnpm nx:reset && pnpm nx:run-many -t serve",
-    "dev-auth": "pnpm dev --projects=auth"
+    "dev-auth": "pnpm dev --projects=auth",
+    "prisma:generate:auth": "cd apps/auth && prisma generate",
+    "prisma:generate:mail": "cd apps/mail && prisma generate",
+    "prisma:generate:questions": "cd apps/questions && prisma generate",
+    "prisma:generate:all": "pnpm prisma:generate:auth && pnpm prisma:generate:mail && pnpm prisma:generate:questions",
+    "prisma:migrate:auth": "cd apps/auth && prisma migrate dev",
+    "prisma:migrate:mail": "cd apps/mail && prisma migrate dev",
+    "prisma:migrate:questions": "cd apps/questions && prisma migrate dev",
+    "prisma:push:auth": "cd apps/auth && prisma db push",
+    "prisma:push:mail": "cd apps/mail && prisma db push",
+    "prisma:push:questions": "cd apps/questions && prisma db push"
   },
   "private": true,
   "dependencies": {
