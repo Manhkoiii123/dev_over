@@ -15,4 +15,12 @@ export class EmailService {
       html: `<strong>${payload.code}</strong>`,
     });
   }
+  sendLinkForgotPassword(payload: { email: string; code: string }) {
+    return this.resend.emails.send({
+      from: 'Ecommerce <onboarding@resend.dev>',
+      to: ['manhtranduc0202@gmail.com'],
+      subject: 'Reset your password',
+      html: `<strong>http://localhost:3000/reset-password?code=${payload.code}&email=${payload.email}</strong>`,
+    });
+  }
 }

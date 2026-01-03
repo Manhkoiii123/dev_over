@@ -5,7 +5,10 @@ import { MailService } from '../services/mail.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { RequestParam } from '@common/decorators/request-param.decorator';
-import { SendOtpBodyTcpRequest } from '@common/interfaces/tcp/verification';
+import {
+  ForgotPasswordTcpRequest,
+  SendOtpBodyTcpRequest,
+} from '@common/interfaces/tcp/verification';
 import { ValidateVerificationCodeBodyTcpRequest } from '@common/interfaces/tcp/verification';
 
 @Controller('mail')
@@ -34,6 +37,20 @@ export class MailController {
     @RequestParam() body: SendOtpBodyTcpRequest
   ): Promise<Response<{ message: string }>> {
     const result = await this.mailService.resendOtp(body);
+    return Response.success<{ message: string }>(result);
+  }
+  @MessagePattern(TCP_REQUEST_MESSAGE.MAIL.SEND_LINK_FORGOT_PASSWORD)
+  async sendLinkForgotPassword(
+    @RequestParam() body: ForgotPasswordTcpRequest
+  ): Promise<Response<{ message: string }>> {
+    const result = await this.mailService.sendLinkForgotPassword(body);
+    return Response.success<{ message: string }>(result);
+  }
+  @MessagePattern(TCP_REQUEST_MESSAGE.MAIL.RESEND_LINK_FORGOT_PASSWORD)
+  async resendLinkForgotPassword(
+    @RequestParam() body: ForgotPasswordTcpRequest
+  ): Promise<Response<{ message: string }>> {
+    const result = await this.mailService.resendLinkForgotPassword(body);
     return Response.success<{ message: string }>(result);
   }
 }

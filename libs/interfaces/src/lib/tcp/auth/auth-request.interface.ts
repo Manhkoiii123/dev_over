@@ -2,6 +2,7 @@ import {
   LoginBodyDto,
   RefreshTokenBodyDto,
   RegisterBodyDto,
+  ResetPasswordBodyDto,
 } from '../../gateway/auth';
 
 export type RegisterBodyTcpRequest = RegisterBodyDto & {
@@ -27,6 +28,11 @@ export type GoogleAuthUrlTcpRequest = {
 export type GoogleCallbackTcpRequest = {
   code: string;
   state: string;
+  userAgent: string;
+  ip: string;
+};
+
+export type ResetPasswordTcpRequest = ResetPasswordBodyDto & {
   userAgent: string;
   ip: string;
 };

@@ -82,4 +82,11 @@ export class AuthRepository {
       data: { status: USER_STATUS.ACTIVE },
     });
   }
+
+  async updateUser(userId: number, data: Partial<RegisterBodyTcpRequest>) {
+    return this.prisma.client.user.update({
+      where: { id: userId },
+      data,
+    });
+  }
 }
