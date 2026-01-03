@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CONFIGURATION, TConfiguration } from '../configuration';
 import { ConfigModule } from '@nestjs/config';
+import { QuestionModule } from './modules/question/question.module';
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       load: [() => CONFIGURATION],
     }),
+    QuestionModule,
   ],
 })
 export class AppModule {
