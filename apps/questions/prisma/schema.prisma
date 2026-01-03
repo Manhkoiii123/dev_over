@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-   output   = "../generator"
+  output   = "../generator"
 }
 
 datasource db {
@@ -13,8 +13,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  answers   Answer[]
-  questions Question[]
+  answers     Answer[]
+  questions   Question[]
+  collections Collection[]
+  votes       Vote[]
+  bookmarks        Bookmark[]
 }
 
 model Question {
@@ -23,15 +26,30 @@ model Question {
   authorId  String
   title     String
   content   String
-  tags      String[]
   upvotes   Int      @default(0)
   downvotes Int      @default(0)
+  viewsCount       Int        @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  answers   Answer[]
+  answers      Answer[]
+  collections  Collection[]
+  tagQuestions TagQuestion[]
+  bookmarks        Bookmark[]
 }
+model Bookmark {
+  id         String    @id @default(uuid())
+  userId     String
+  questionId String
+  createdAt  DateTime  @default(now())
 
+  user       User      @relation(fields: [userId], references: [id])
+  question   Question  @relation(fields: [questionId], references: [id])
+
+  @@unique([userId, questionId])
+  @@index([userId])
+}
 model Answer {
   id         String   @id @default(uuid())
   author     User     @relation(fields: [authorId], references: [id])
@@ -43,4 +61,61 @@ model Answer {
   downvotes  Int      @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  questions Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tagQuestions TagQuestion[]
+}
+
+model TagQuestion {
+  id         String   @id @default(uuid())
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  tagId      String
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([tagId, questionId])
+}
+
+model Collection {
+  id         String   @id @default(uuid())
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([authorId, questionId])
+}
+
+enum ActionType {
+  question
+  answer
+}
+
+enum VoteType {
+  upvote
+  downvote
+}
+
+model Vote {
+  id         String     @id @default(uuid())
+  author     User       @relation(fields: [authorId], references: [id])
+  authorId   String
+  actionId   String
+  actionType ActionType
+  voteType   VoteType
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([authorId, actionId, actionType])
 }
