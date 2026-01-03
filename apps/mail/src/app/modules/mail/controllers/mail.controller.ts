@@ -46,4 +46,11 @@ export class MailController {
     const result = await this.mailService.sendLinkForgotPassword(body);
     return Response.success<{ message: string }>(result);
   }
+  @MessagePattern(TCP_REQUEST_MESSAGE.MAIL.RESEND_LINK_FORGOT_PASSWORD)
+  async resendLinkForgotPassword(
+    @RequestParam() body: ForgotPasswordTcpRequest
+  ): Promise<Response<{ message: string }>> {
+    const result = await this.mailService.resendLinkForgotPassword(body);
+    return Response.success<{ message: string }>(result);
+  }
 }

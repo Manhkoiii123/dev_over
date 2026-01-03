@@ -52,12 +52,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'password',
-          errors: 'Invalid password',
-        },
-      ]);
+      throw new BadRequestException('Username or password is incorrect');
     }
 
     const device = await this.authRepository.createDevice({

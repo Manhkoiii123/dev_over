@@ -226,6 +226,31 @@ export class AuthController {
       .pipe(map((data) => new ResponseDto(data)));
   }
 
+  @Post('re-send-link-forgot-password')
+  @ApiOkResponse({ type: ResponseDto<{ message: string }> })
+  @ApiOperation({ summary: 'Resend link forgot password' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async reSendLinkForgotPassword(
+    @Body() body: ForgotPasswordBodyDto,
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string
+  ) {
+    return this.mailClient
+      .send<{ message: string }, ForgotPasswordTcpRequest>(
+        TCP_REQUEST_MESSAGE.MAIL.RESEND_LINK_FORGOT_PASSWORD,
+        {
+          data: { ...body, userAgent, ip },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
   @Post('send-link-reset-password')
   @ApiOkResponse({ type: ResponseDto<{ message: string }> })
   @ApiOperation({ summary: 'Send link reset password' })

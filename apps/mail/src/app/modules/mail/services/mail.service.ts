@@ -122,4 +122,30 @@ export class MailService {
       message: 'Email sent successfully',
     };
   }
+
+  async resendLinkForgotPassword(body: ForgotPasswordTcpRequest) {
+    await this.mailRepository.deleteVerificationCode({
+      email_type: {
+        email: body.email,
+        type: TypeOfVerificationCode.PASSWORD_RESET,
+      },
+    });
+    const code = generateOTP();
+    await this.mailRepository.createVerificationCode({
+      email: body.email,
+      code,
+      type: TypeOfVerificationCode.PASSWORD_RESET,
+      expiresAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRES_IN)),
+    });
+    const { data: _, error } = await this.emailService.sendLinkForgotPassword({
+      email: body.email,
+      code,
+    });
+    if (error) {
+      throw new BadRequestException('Failed to send email');
+    }
+    return {
+      message: 'Email sent successfully',
+    };
+  }
 }
