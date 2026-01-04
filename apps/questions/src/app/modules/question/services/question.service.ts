@@ -11,7 +11,7 @@ export class QuestionService {
     return await this.questionRepository.createQuestion(data, userId);
   }
 
-  async getQuestionById(questionId: string) {
-    return await this.questionRepository.getQuestionById(questionId);
+  async getQuestionById(questionId: string, processId: string) {
+    return await this.questionRepository.getQuestionById(questionId, processId);
   }
 }

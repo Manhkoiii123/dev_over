@@ -1,11 +1,19 @@
 import { PrismaService } from '@common/database/prisma';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaClient as PrismaQuestionClient } from '../../../../../../questions/generator/client';
 import { CreateQuestionBodyTcpRequest } from '@common/interfaces/tcp/question';
-
+import { TCP_SERVICES } from '@common/configuration/tcp.config';
+import { TcpClient } from '@common/interfaces/tcp/common/tcp-client.interface';
+import { GetMeTcpResponse, GetMeTcpRequest } from '@common/interfaces/tcp/auth';
+import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
+import { first, firstValueFrom, map } from 'rxjs';
+import { ResponseDto } from '@common/interfaces/gateway/response.interface';
 @Injectable()
 export class QuestionRepository {
-  constructor(private readonly prisma: PrismaService<PrismaQuestionClient>) {}
+  constructor(
+    private readonly prisma: PrismaService<PrismaQuestionClient>,
+    @Inject(TCP_SERVICES.AUTH_SERVICE) private readonly authClient: TcpClient
+  ) {}
 
   async createQuestion(data: CreateQuestionBodyTcpRequest, userId: number) {
     const { title, content, tags } = data;
@@ -51,7 +59,7 @@ export class QuestionRepository {
     });
   }
 
-  async getQuestionById(questionId: string) {
+  async getQuestionById(questionId: string, processId: string) {
     const res = await this.prisma.client.question.findUnique({
       where: { id: questionId },
       include: {
@@ -62,7 +70,19 @@ export class QuestionRepository {
         },
       },
     });
-
+    const user = await firstValueFrom(
+      this.authClient
+        .send<GetMeTcpResponse, { userId: number }>(
+          TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+          {
+            data: {
+              userId: Number(res.authorId),
+            },
+            processId: processId,
+          }
+        )
+        .pipe(map((data) => new ResponseDto(data)))
+    );
     const format = {
       id: res.id,
       title: res.title,
@@ -76,6 +96,7 @@ export class QuestionRepository {
       tags: res.tagQuestions.map((tagQuestion) => ({
         name: tagQuestion.tag.name,
       })),
+      author: user.data,
     };
 
     return format;

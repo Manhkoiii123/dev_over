@@ -8,6 +8,7 @@ import {
   Headers,
   Inject,
   Ip,
+  Param,
   Post,
   Query,
   Res,
@@ -460,6 +461,36 @@ export class AuthController {
         {
           data: {
             userId: userData.userId,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Get('profile/:id')
+  @ApiOkResponse({ type: ResponseDto<GetMeResponseDto> })
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  @Authorization({ secured: true })
+  async getProfile(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string
+  ) {
+    return this.authClient
+      .send<GetMeTcpResponse, GetMeTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+        {
+          data: {
+            userId: Number(id),
             userAgent,
             ip,
           },

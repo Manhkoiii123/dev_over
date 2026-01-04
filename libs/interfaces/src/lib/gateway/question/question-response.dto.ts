@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDate, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { GetMeResponseDto } from '../auth/auth-response.dto';
 
 export class QuestionResponseDto {
   @ApiProperty({ description: 'Question ID' })
@@ -54,4 +55,8 @@ export class DetailQuestionResponseDto extends QuestionResponseDto {
   @IsArray()
   @Type(() => TagNameDto)
   tags: TagNameDto[];
+
+  @ApiProperty({ description: 'Author details', type: GetMeResponseDto })
+  @Type(() => GetMeResponseDto)
+  author: GetMeResponseDto;
 }

@@ -10,6 +10,7 @@ import {
   DetailQuestionTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
+import { ProcessId } from '@common/decorators/processId.decorator';
 
 @Controller('question')
 @UseInterceptors(TcpLoggingInterceptor)
@@ -25,9 +26,13 @@ export class QuestionController {
   }
   @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.GET_BY_ID)
   async getQuestionById(
-    @RequestParam() params: { questionId: string }
+    @RequestParam() params: { questionId: string },
+    @ProcessId() processId: string
   ): Promise<Response<DetailQuestionTcpResponse>> {
-    const res = await this.questionService.getQuestionById(params.questionId);
+    const res = await this.questionService.getQuestionById(
+      params.questionId,
+      processId
+    );
     return Response.success<DetailQuestionTcpResponse>(res);
   }
 }
