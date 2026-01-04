@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsDate, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class QuestionResponseDto {
   @ApiProperty({ description: 'Question ID' })
@@ -37,4 +38,20 @@ export class QuestionResponseDto {
   @ApiProperty({ description: 'Updated at timestamp' })
   @IsDate()
   updatedAt: Date;
+}
+
+export class TagNameDto {
+  @ApiProperty({ description: 'Tag name' })
+  @IsString()
+  name: string;
+}
+
+export class DetailQuestionResponseDto extends QuestionResponseDto {
+  @ApiProperty({
+    description: 'Tags associated with the question',
+    type: [TagNameDto],
+  })
+  @IsArray()
+  @Type(() => TagNameDto)
+  tags: TagNameDto[];
 }

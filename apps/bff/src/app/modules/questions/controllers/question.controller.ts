@@ -1,7 +1,16 @@
 import { TCP_SERVICES } from '@common/configuration/tcp.config';
 import { ResponseDto } from '@common/interfaces/gateway/response.interface';
 import { TcpClient } from '@common/interfaces/tcp/common/tcp-client.interface';
-import { Body, Controller, Headers, Inject, Ip, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Inject,
+  Ip,
+  Param,
+  Post,
+} from '@nestjs/common';
 import {
   ApiHeader,
   ApiOkResponse,
@@ -11,11 +20,14 @@ import {
 
 import {
   CreateQuestionDto,
+  DetailQuestionResponseDto,
   QuestionResponseDto,
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
 import {
   CreateQuestionBodyTcpRequest,
+  DetailQuestionTcpResponse,
+  GetQuestionBodyTcpRequest,
   QuestionTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
@@ -57,6 +69,34 @@ export class QuestionController {
             userAgent,
             ip,
             userId: userData.userId,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+  @Get(':id')
+  @ApiOkResponse({ type: ResponseDto<DetailQuestionResponseDto> })
+  @ApiOperation({ summary: 'Get detail question' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async getById(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string
+  ) {
+    return this.questionClient
+      .send<DetailQuestionTcpResponse, GetQuestionBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.QUESTION.GET_BY_ID,
+        {
+          data: {
+            questionId: id,
+            userAgent,
+            ip,
           },
           processId: processId,
         }

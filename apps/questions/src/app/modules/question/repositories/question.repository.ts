@@ -50,4 +50,34 @@ export class QuestionRepository {
       return question;
     });
   }
+
+  async getQuestionById(questionId: string) {
+    const res = await this.prisma.client.question.findUnique({
+      where: { id: questionId },
+      include: {
+        tagQuestions: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    const format = {
+      id: res.id,
+      title: res.title,
+      content: res.content,
+      upvotes: res.upvotes,
+      downvotes: res.downvotes,
+      viewsCount: res.viewsCount,
+      authorId: res.authorId,
+      createdAt: res.createdAt,
+      updatedAt: res.updatedAt,
+      tags: res.tagQuestions.map((tagQuestion) => ({
+        name: tagQuestion.tag.name,
+      })),
+    };
+
+    return format;
+  }
 }

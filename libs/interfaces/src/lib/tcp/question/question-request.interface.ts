@@ -5,3 +5,9 @@ export type CreateQuestionBodyTcpRequest = CreateQuestionDto & {
   ip: string;
   userId: number;
 };
+
+export type GetQuestionBodyTcpRequest = {
+  questionId: string;
+  userAgent: string;
+  ip: string;
+};

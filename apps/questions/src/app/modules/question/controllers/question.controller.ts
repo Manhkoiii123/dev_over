@@ -5,7 +5,10 @@ import { MessagePattern } from '@nestjs/microservices';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { RequestParam } from '@common/decorators/request-param.decorator';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
-import { CreateQuestionBodyTcpRequest } from '@common/interfaces/tcp/question';
+import {
+  CreateQuestionBodyTcpRequest,
+  DetailQuestionTcpResponse,
+} from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 
 @Controller('question')
@@ -19,5 +22,12 @@ export class QuestionController {
   ): Promise<Response<string>> {
     await this.questionService.createQuestion(body);
     return Response.success<string>(HTTP_MESSAGE.CREATED);
+  }
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.GET_BY_ID)
+  async getQuestionById(
+    @RequestParam() params: { questionId: string }
+  ): Promise<Response<DetailQuestionTcpResponse>> {
+    const res = await this.questionService.getQuestionById(params.questionId);
+    return Response.success<DetailQuestionTcpResponse>(res);
   }
 }

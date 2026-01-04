@@ -19,7 +19,7 @@ enum MAIL {
   RESEND_LINK_FORGOT_PASSWORD = 'mail.resend_link_forgot_password',
 }
 enum QUESTION {
-  GET = 'question.get',
+  GET_BY_ID = 'question.get_',
   CREATE = 'question.create',
   UPDATE = 'question.update',
   DELETE = 'question.delete',

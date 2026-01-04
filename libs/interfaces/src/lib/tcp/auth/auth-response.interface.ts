@@ -13,4 +13,5 @@ export type LoginTcpResponse = AuthLoginResponseDto;
 export type RefreshTokenTcpResponse = AuthRefreshTokenResponseDto;
 
 export type GoogleOAuthUrlTcpResponse = GetOAuthAuthorizationUrlResponseDto;
+
 export type GetMeTcpResponse = GetMeResponseDto;

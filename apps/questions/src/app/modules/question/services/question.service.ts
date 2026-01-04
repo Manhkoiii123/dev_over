@@ -10,4 +10,8 @@ export class QuestionService {
     const { userId } = data;
     return await this.questionRepository.createQuestion(data, userId);
   }
+
+  async getQuestionById(questionId: string) {
+    return await this.questionRepository.getQuestionById(questionId);
+  }
 }
