@@ -19,10 +19,11 @@ enum MAIL {
   RESEND_LINK_FORGOT_PASSWORD = 'mail.resend_link_forgot_password',
 }
 enum QUESTION {
-  GET_BY_ID = 'question.get_',
+  GET_BY_ID = 'question.get_by_id',
   CREATE = 'question.create',
   UPDATE = 'question.update',
   DELETE = 'question.delete',
+  GET_LIST = 'question.get_list',
 }
 export const TCP_REQUEST_MESSAGE = {
   AUTH,

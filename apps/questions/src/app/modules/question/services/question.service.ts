@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateQuestionBodyTcpRequest } from '@common/interfaces/tcp/question';
+import {
+  CreateQuestionBodyTcpRequest,
+  ListQuestionsBodyTcpRequest,
+} from '@common/interfaces/tcp/question';
 import { QuestionRepository } from '../repositories/question.repository';
+import { ListQuestionsDto } from '@common/interfaces/gateway/question';
 
 @Injectable()
 export class QuestionService {
@@ -13,5 +17,9 @@ export class QuestionService {
 
   async getQuestionById(questionId: string, processId: string) {
     return await this.questionRepository.getQuestionById(questionId, processId);
+  }
+
+  async getList(query: ListQuestionsDto, processId: string) {
+    return await this.questionRepository.getList(query, processId);
   }
 }

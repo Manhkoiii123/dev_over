@@ -8,6 +8,8 @@ import { Response } from '@common/interfaces/tcp/common/response.interface';
 import {
   CreateQuestionBodyTcpRequest,
   DetailQuestionTcpResponse,
+  ListQuestionsBodyTcpRequest,
+  ListQuestionsTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -34,5 +36,14 @@ export class QuestionController {
       processId
     );
     return Response.success<DetailQuestionTcpResponse>(res);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.GET_LIST)
+  async getList(
+    @RequestParam() params: ListQuestionsBodyTcpRequest,
+    @ProcessId() processId: string
+  ): Promise<Response<ListQuestionsTcpResponse>> {
+    const res = await this.questionService.getList(params.query, processId);
+    return Response.success<ListQuestionsTcpResponse>(res);
   }
 }

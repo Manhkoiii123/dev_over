@@ -10,6 +10,7 @@ import {
   Ip,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiHeader,
@@ -21,6 +22,8 @@ import {
 import {
   CreateQuestionDto,
   DetailQuestionResponseDto,
+  ListQuestionsDto,
+  ListQuestionsResponseDto,
   QuestionResponseDto,
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -28,6 +31,8 @@ import {
   CreateQuestionBodyTcpRequest,
   DetailQuestionTcpResponse,
   GetQuestionBodyTcpRequest,
+  ListQuestionsBodyTcpRequest,
+  ListQuestionsTcpResponse,
   QuestionTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
@@ -75,6 +80,37 @@ export class QuestionController {
       )
       .pipe(map((data) => new ResponseDto(data)));
   }
+  @Get('')
+  @ApiOkResponse({ type: ResponseDto<ListQuestionsResponseDto> })
+  @ApiOperation({ summary: 'Get list of questions' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async getList(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Query() query: ListQuestionsDto
+  ) {
+    return this.questionClient
+      .send<ListQuestionsTcpResponse, ListQuestionsBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.QUESTION.GET_LIST,
+        {
+          data: {
+            query: {
+              ...query,
+              userAgent,
+              ip,
+            },
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
   @Get(':id')
   @ApiOkResponse({ type: ResponseDto<DetailQuestionResponseDto> })
   @ApiOperation({ summary: 'Get detail question' })
