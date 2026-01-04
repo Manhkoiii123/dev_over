@@ -36,3 +36,9 @@ export type ResetPasswordTcpRequest = ResetPasswordBodyDto & {
   userAgent: string;
   ip: string;
 };
+
+export type GetMeTcpRequest = {
+  userId: number;
+  userAgent: string;
+  ip: string;
+};

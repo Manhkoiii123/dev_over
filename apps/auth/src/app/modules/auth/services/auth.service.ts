@@ -165,4 +165,8 @@ export class AuthService {
       metadata: res,
     };
   }
+
+  async getMe(userId: string) {
+    return this.authRepository.getMe(userId);
+  }
 }

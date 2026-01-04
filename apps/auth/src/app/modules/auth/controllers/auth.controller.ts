@@ -12,6 +12,7 @@ import {
   RefreshTokenBodyTcpRequest,
   RefreshTokenTcpResponse,
   ResetPasswordTcpRequest,
+  GetMeTcpResponse,
 } from '@common/interfaces/tcp/auth';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
@@ -108,5 +109,14 @@ export class AuthController {
   ) {
     const res = await this.authService.verifyUserToken(data, processId);
     return Response.success<AuthorizeResponse>(res);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.GET_ME)
+  async getMe(
+    @ProcessId() processId: string,
+    @RequestParam() data: { userId: number; userAgent: string; ip: string }
+  ) {
+    const res = await this.authService.getMe(data.userId.toString());
+    return Response.success<GetMeTcpResponse>(res as GetMeTcpResponse);
   }
 }

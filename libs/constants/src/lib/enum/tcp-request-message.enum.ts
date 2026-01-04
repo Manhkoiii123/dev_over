@@ -8,6 +8,7 @@ enum AUTH {
   RESET_PASSWORD = 'mail.reset_password',
   GOOGLE_CALLBACK = 'auth.google_callback',
   VERIFY_USER_TOKEN = 'auth.verify_user_token',
+  GET_ME = 'auth.get_me',
 }
 enum MAIL {
   SEND = 'mail.send',
