@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        Int   @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -23,7 +23,7 @@ model User {
 model Question {
   id        String   @id @default(uuid())
   author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+  authorId  Int
   title     String
   content   String
   upvotes   Int      @default(0)
@@ -40,7 +40,7 @@ model Question {
 }
 model Bookmark {
   id         String    @id @default(uuid())
-  userId     String
+  userId     Int
   questionId String
   createdAt  DateTime  @default(now())
 
@@ -53,7 +53,7 @@ model Bookmark {
 model Answer {
   id         String   @id @default(uuid())
   author     User     @relation(fields: [authorId], references: [id])
-  authorId   String
+  authorId   Int
   question   Question @relation(fields: [questionId], references: [id])
   questionId String
   content    String
@@ -88,7 +88,7 @@ model TagQuestion {
 model Collection {
   id         String   @id @default(uuid())
   author     User     @relation(fields: [authorId], references: [id])
-  authorId   String
+  authorId   Int
   question   Question @relation(fields: [questionId], references: [id])
   questionId String
   createdAt  DateTime @default(now())
@@ -110,7 +110,7 @@ enum VoteType {
 model Vote {
   id         String     @id @default(uuid())
   author     User       @relation(fields: [authorId], references: [id])
-  authorId   String
+  authorId   Int
   actionId   String
   actionType ActionType
   voteType   VoteType

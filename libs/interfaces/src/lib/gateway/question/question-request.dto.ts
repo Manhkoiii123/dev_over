@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   ArrayNotEmpty,
@@ -9,15 +10,18 @@ import {
 } from 'class-validator';
 
 export class CreateQuestionDto {
+  @ApiProperty({ description: 'Question title' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(180)
   title!: string;
 
+  @ApiProperty({ description: 'Question content' })
   @IsString()
   @IsNotEmpty()
   content!: string;
 
+  @ApiProperty({ description: 'Question tags', required: false })
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()

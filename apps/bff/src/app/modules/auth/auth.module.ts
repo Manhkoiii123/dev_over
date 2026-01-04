@@ -3,15 +3,15 @@ import { Module } from '@nestjs/common';
 import { ClientsModule } from '@nestjs/microservices';
 import { AuthController } from './controllers/auth.controller';
 
+const TcpClients = ClientsModule.registerAsync([
+  TcpProvider(TCP_SERVICES.AUTH_SERVICE),
+  TcpProvider(TCP_SERVICES.MAIL_SERVICE),
+]);
+
 @Module({
-  imports: [
-    ClientsModule.registerAsync([
-      TcpProvider(TCP_SERVICES.AUTH_SERVICE),
-      TcpProvider(TCP_SERVICES.MAIL_SERVICE),
-    ]),
-  ],
+  imports: [TcpClients],
   controllers: [AuthController],
   providers: [],
-  exports: [],
+  exports: [TcpClients],
 })
 export class AuthModule {}

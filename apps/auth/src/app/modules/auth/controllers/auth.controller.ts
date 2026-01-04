@@ -16,6 +16,8 @@ import {
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 import { GoogleService } from '../../../shared/service/google.service';
+import { ProcessId } from '@common/decorators/processId.decorator';
+import { AuthorizeResponse } from '@common/interfaces/tcp/authorizer/authorizer-response.interface';
 
 @Controller('auth')
 @UseInterceptors(TcpLoggingInterceptor)
@@ -97,5 +99,14 @@ export class AuthController {
   ): Promise<Response<string>> {
     const result = await this.authService.resetPassword(body);
     return Response.success<string>(result);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.AUTH.VERIFY_USER_TOKEN)
+  async verifyUserToken(
+    @RequestParam() data: string,
+    @ProcessId() processId: string
+  ) {
+    const res = await this.authService.verifyUserToken(data, processId);
+    return Response.success<AuthorizeResponse>(res);
   }
 }
