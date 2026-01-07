@@ -206,7 +206,7 @@ export class QuestionRepository {
         upvotes: true,
         downvotes: true,
         viewsCount: true,
-        answers: true,
+        answersCount: true,
       },
     });
 
@@ -214,7 +214,7 @@ export class QuestionRepository {
       upvotes: res.upvotes,
       downvotes: res.downvotes,
       viewsCount: res.viewsCount,
-      answersCount: res.answers.length,
+      answersCount: res.answersCount,
     };
   }
 
