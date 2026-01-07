@@ -38,6 +38,10 @@ export class RegisterBodyDto {
   @MaxLength(100)
   @Match('password', { message: 'The passwords did not match' })
   confirmPassword: string;
+
+  @ApiProperty({ description: 'Avatar' })
+  @IsString()
+  avatar?: string;
 }
 
 export class LoginBodyDto {

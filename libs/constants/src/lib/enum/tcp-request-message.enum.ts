@@ -7,6 +7,8 @@ enum AUTH {
   GET_AUTHORIZATION_URL = 'auth.get_authorization_url',
   RESET_PASSWORD = 'mail.reset_password',
   GOOGLE_CALLBACK = 'auth.google_callback',
+  VERIFY_USER_TOKEN = 'auth.verify_user_token',
+  GET_ME = 'auth.get_me',
 }
 enum MAIL {
   SEND = 'mail.send',
@@ -16,7 +18,18 @@ enum MAIL {
   SEND_LINK_FORGOT_PASSWORD = 'mail.send_link_forgot_password',
   RESEND_LINK_FORGOT_PASSWORD = 'mail.resend_link_forgot_password',
 }
+enum QUESTION {
+  GET_BY_ID = 'question.get_by_id',
+  CREATE = 'question.create',
+  UPDATE = 'question.update',
+  DELETE = 'question.delete',
+  GET_LIST = 'question.get_list',
+  GET_ANALYTICS = 'question.get_analytics',
+  GET_ANSWERS_BY_QUESTION_ID = 'question.get_answers_by_question_id',
+  VOTE_OR_DOWNVOTE_QUESTION = 'question.vote_or_downvote_question',
+}
 export const TCP_REQUEST_MESSAGE = {
   AUTH,
   MAIL,
+  QUESTION,
 };

@@ -8,6 +8,7 @@ import {
   Headers,
   Inject,
   Ip,
+  Param,
   Post,
   Query,
   Res,
@@ -33,6 +34,7 @@ import {
   RefreshTokenBodyDto,
   GetOAuthAuthorizationUrlResponseDto,
   ResetPasswordBodyDto,
+  GetMeResponseDto,
 } from '@common/interfaces/gateway/auth';
 import {
   AuthTcpResponse,
@@ -44,6 +46,8 @@ import {
   GoogleOAuthUrlTcpResponse,
   GoogleAuthUrlTcpRequest,
   GoogleCallbackTcpRequest,
+  GetMeTcpResponse,
+  GetMeTcpRequest,
 } from '@common/interfaces/tcp/auth';
 
 import {
@@ -60,6 +64,9 @@ import {
   ValidateVerificationCodeDto,
 } from '@common/interfaces/gateway/verification';
 import { TypeOfVerificationCode } from '@common/constants/enum/type-verification-code.enum';
+import { AuthorizedMetadata } from '@common/interfaces/tcp/authorizer/authorizer-response.interface';
+import { UserData } from '@common/decorators/user-data.decorator';
+import { Authorization } from '@common/decorators/authorizer.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -431,5 +438,65 @@ export class AuthController {
             .pipe(map(() => new ResponseDto(authResult)));
         })
       );
+  }
+
+  @Get('me')
+  @ApiOkResponse({ type: ResponseDto<GetMeResponseDto> })
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  @Authorization({ secured: true })
+  async getMe(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @UserData() userData: AuthorizedMetadata
+  ) {
+    return this.authClient
+      .send<GetMeTcpResponse, GetMeTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+        {
+          data: {
+            userId: userData.userId,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Get('profile/:id')
+  @ApiOkResponse({ type: ResponseDto<GetMeResponseDto> })
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  @Authorization({ secured: true })
+  async getProfile(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string
+  ) {
+    return this.authClient
+      .send<GetMeTcpResponse, GetMeTcpRequest>(
+        TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+        {
+          data: {
+            userId: Number(id),
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
   }
 }

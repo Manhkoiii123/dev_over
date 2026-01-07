@@ -26,7 +26,8 @@
       "@common/schemas/*": ["libs/schemas/src/lib/*"],
       "@common/entities/*": ["libs/entities/src/lib/*"],
       "@common/dtos/*": ["libs/dtos/src/lib/*"],
-      "@common/database/*": ["libs/database/src/lib/*"]
+      "@common/database/*": ["libs/database/src/lib/*"],
+      "@common/guard/*": ["libs/guard/src/lib/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

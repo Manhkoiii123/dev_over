@@ -157,4 +157,16 @@ export class AuthService {
 
     return 'Password updated successfully';
   }
+
+  async verifyUserToken(token: string, processId: string) {
+    const res = await this.tokenService.verifyAccessToken(token);
+    return {
+      valid: true,
+      metadata: res,
+    };
+  }
+
+  async getMe(userId: string) {
+    return this.authRepository.getMe(userId);
+  }
 }
