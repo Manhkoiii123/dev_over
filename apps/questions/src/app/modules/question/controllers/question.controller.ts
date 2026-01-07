@@ -6,6 +6,7 @@ import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.
 import { RequestParam } from '@common/decorators/request-param.decorator';
 import { Response } from '@common/interfaces/tcp/common/response.interface';
 import {
+  AnalysisQuestionTcpResponse,
   CreateQuestionBodyTcpRequest,
   DetailQuestionTcpResponse,
   ListQuestionsBodyTcpRequest,
@@ -45,5 +46,17 @@ export class QuestionController {
   ): Promise<Response<ListQuestionsTcpResponse>> {
     const res = await this.questionService.getList(params.query, processId);
     return Response.success<ListQuestionsTcpResponse>(res);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.GET_ANALYTICS)
+  async getAnalytics(
+    @RequestParam() params: { questionId: string },
+    @ProcessId() processId: string
+  ): Promise<Response<AnalysisQuestionTcpResponse>> {
+    const res = await this.questionService.getAnalytics(
+      params.questionId,
+      processId
+    );
+    return Response.success<AnalysisQuestionTcpResponse>(res);
   }
 }

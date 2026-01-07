@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 
 import {
+  AnalysisQuestionDto,
   CreateQuestionDto,
   DetailQuestionResponseDto,
   ListQuestionsDto,
@@ -28,6 +29,7 @@ import {
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
 import {
+  AnalysisQuestionTcpResponse,
   CreateQuestionBodyTcpRequest,
   DetailQuestionTcpResponse,
   GetQuestionBodyTcpRequest,
@@ -128,6 +130,34 @@ export class QuestionController {
     return this.questionClient
       .send<DetailQuestionTcpResponse, GetQuestionBodyTcpRequest>(
         TCP_REQUEST_MESSAGE.QUESTION.GET_BY_ID,
+        {
+          data: {
+            questionId: id,
+            userAgent,
+            ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+  @Get('/analytics/:id')
+  @ApiOkResponse({ type: ResponseDto<AnalysisQuestionDto> })
+  @ApiOperation({ summary: 'Get analytics question' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async getAnalytics(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string
+  ) {
+    return this.questionClient
+      .send<AnalysisQuestionTcpResponse, GetQuestionBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.QUESTION.GET_ANALYTICS,
         {
           data: {
             questionId: id,

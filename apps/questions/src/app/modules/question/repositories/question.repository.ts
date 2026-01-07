@@ -158,6 +158,25 @@ export class QuestionRepository {
     return format;
   }
 
+  async getAnalytics(questionId: string, processId: string) {
+    const res = await this.prisma.client.question.findUnique({
+      where: { id: questionId },
+      select: {
+        upvotes: true,
+        downvotes: true,
+        viewsCount: true,
+        answers: true,
+      },
+    });
+
+    return {
+      upvotes: res.upvotes,
+      downvotes: res.downvotes,
+      viewsCount: res.viewsCount,
+      answersCount: res.answers.length,
+    };
+  }
+
   async getList(query: ListQuestionsDto, processId: string) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;

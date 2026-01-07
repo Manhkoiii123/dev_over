@@ -24,6 +24,7 @@ enum QUESTION {
   UPDATE = 'question.update',
   DELETE = 'question.delete',
   GET_LIST = 'question.get_list',
+  GET_ANALYTICS = 'question.get_analytics',
 }
 export const TCP_REQUEST_MESSAGE = {
   AUTH,

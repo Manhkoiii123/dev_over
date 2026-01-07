@@ -166,3 +166,18 @@ export class ListQuestionsResponseDto {
   @Type(() => PaginationMetaDto)
   meta: PaginationMetaDto;
 }
+
+export class AnalysisQuestionDto {
+  @ApiProperty({ description: 'Number of views' })
+  @IsNumber()
+  viewsCount: number;
+  @ApiProperty({ description: 'Number of upvotes' })
+  @IsNumber()
+  upvotes: number;
+  @ApiProperty({ description: 'Number of downvotes' })
+  @IsNumber()
+  downvotes: number;
+  @ApiProperty({ description: 'Number of answers' })
+  @IsNumber()
+  answersCount: number;
+}

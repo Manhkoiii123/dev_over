@@ -22,4 +22,8 @@ export class QuestionService {
   async getList(query: ListQuestionsDto, processId: string) {
     return await this.questionRepository.getList(query, processId);
   }
+
+  async getAnalytics(questionId: string, processId: string) {
+    return await this.questionRepository.getAnalytics(questionId, processId);
+  }
 }
