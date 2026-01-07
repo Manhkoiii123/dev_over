@@ -93,3 +93,24 @@ export class CreateQuestionDto {
   @IsString({ each: true })
   tags?: string[];
 }
+
+export class ListAnswersDto {
+  @ApiProperty({ description: 'Page number', default: 1, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiProperty({
+    description: 'Number of items per page',
+    default: 10,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @Max(50)
+  limit?: number = 10;
+}

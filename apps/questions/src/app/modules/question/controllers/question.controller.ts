@@ -11,6 +11,8 @@ import {
   DetailQuestionTcpResponse,
   ListQuestionsBodyTcpRequest,
   ListQuestionsTcpResponse,
+  QuestionAnswersTcpResponse,
+  ListAnswersByQuestionIdBodyTcpRequest,
 } from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -58,5 +60,17 @@ export class QuestionController {
       processId
     );
     return Response.success<AnalysisQuestionTcpResponse>(res);
+  }
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.GET_ANSWERS_BY_QUESTION_ID)
+  async getAnswersByQuestionId(
+    @RequestParam() params: ListAnswersByQuestionIdBodyTcpRequest,
+    @ProcessId() processId: string
+  ): Promise<Response<QuestionAnswersTcpResponse>> {
+    const res = await this.questionService.getAnswersByQuestionId(
+      params.questionId,
+      params.query,
+      processId
+    );
+    return Response.success<QuestionAnswersTcpResponse>(res);
   }
 }

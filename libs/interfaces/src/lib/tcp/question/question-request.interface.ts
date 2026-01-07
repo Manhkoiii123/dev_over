@@ -1,4 +1,8 @@
-import { CreateQuestionDto, ListQuestionsDto } from '../../gateway/question';
+import {
+  CreateQuestionDto,
+  ListQuestionsDto,
+  ListAnswersDto,
+} from '../../gateway/question';
 
 export type CreateQuestionBodyTcpRequest = CreateQuestionDto & {
   userAgent: string;
@@ -14,6 +18,14 @@ export type GetQuestionBodyTcpRequest = {
 
 export type ListQuestionsBodyTcpRequest = {
   query: ListQuestionsDto & {
+    userAgent: string;
+    ip: string;
+  };
+};
+
+export type ListAnswersByQuestionIdBodyTcpRequest = {
+  questionId: string;
+  query: ListAnswersDto & {
     userAgent: string;
     ip: string;
   };

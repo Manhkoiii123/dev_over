@@ -24,7 +24,9 @@ import {
   CreateQuestionDto,
   DetailQuestionResponseDto,
   ListQuestionsDto,
+  ListAnswersDto,
   ListQuestionsResponseDto,
+  QuestionAnswersResponseDto,
   QuestionResponseDto,
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -35,7 +37,9 @@ import {
   GetQuestionBodyTcpRequest,
   ListQuestionsBodyTcpRequest,
   ListQuestionsTcpResponse,
+  QuestionAnswersTcpResponse,
   QuestionTcpResponse,
+  ListAnswersByQuestionIdBodyTcpRequest,
 } from '@common/interfaces/tcp/question';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { map } from 'rxjs';
@@ -163,6 +167,38 @@ export class QuestionController {
             questionId: id,
             userAgent,
             ip,
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+  @Get('/answers/:id')
+  @ApiOkResponse({ type: ResponseDto<QuestionAnswersResponseDto> })
+  @ApiOperation({ summary: 'Get answers question' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  async getAnswersByQuestionId(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string,
+    @Query() query: ListAnswersDto
+  ) {
+    return this.questionClient
+      .send<QuestionAnswersTcpResponse, ListAnswersByQuestionIdBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.QUESTION.GET_ANSWERS_BY_QUESTION_ID,
+        {
+          data: {
+            questionId: id,
+            query: {
+              ...query,
+              userAgent,
+              ip,
+            },
           },
           processId: processId,
         }

@@ -103,7 +103,9 @@ export class DetailQuestionResponseDto extends QuestionResponseDto {
   @ApiProperty({ description: 'Author details', type: GetMeResponseDto })
   @Type(() => GetMeResponseDto)
   author: GetMeResponseDto;
+}
 
+export class FullDetailQuestionResponseDto extends DetailQuestionResponseDto {
   @ApiProperty({
     description: 'Answers to the question',
     type: [AnswerDto],
@@ -151,6 +153,20 @@ export class PaginationMetaDto {
   @ApiProperty({ description: 'Total number of pages' })
   @IsNumber()
   totalPages: number;
+}
+
+export class QuestionAnswersResponseDto {
+  @ApiProperty({
+    description: 'List of answers for the question',
+    type: [AnswerDto],
+  })
+  @IsArray()
+  @Type(() => AnswerDto)
+  data: AnswerDto[];
+
+  @ApiProperty({ description: 'Pagination metadata', type: PaginationMetaDto })
+  @Type(() => PaginationMetaDto)
+  meta: PaginationMetaDto;
 }
 
 export class ListQuestionsResponseDto {

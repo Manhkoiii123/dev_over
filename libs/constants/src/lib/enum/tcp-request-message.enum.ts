@@ -25,6 +25,7 @@ enum QUESTION {
   DELETE = 'question.delete',
   GET_LIST = 'question.get_list',
   GET_ANALYTICS = 'question.get_analytics',
+  GET_ANSWERS_BY_QUESTION_ID = 'question.get_answers_by_question_id',
 }
 export const TCP_REQUEST_MESSAGE = {
   AUTH,

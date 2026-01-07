@@ -13,6 +13,7 @@ import { first, firstValueFrom, map } from 'rxjs';
 import { ResponseDto } from '@common/interfaces/gateway/response.interface';
 import {
   ListQuestionsDto,
+  ListAnswersDto,
   QuestionFilter,
 } from '@common/interfaces/gateway/question';
 @Injectable()
@@ -75,13 +76,13 @@ export class QuestionRepository {
             tag: true,
           },
         },
-        answers: {
-          include: {
-            author: true,
-          },
-        },
       },
     });
+
+    if (!res) {
+      return null;
+    }
+
     const user = await firstValueFrom(
       this.authClient
         .send<GetMeTcpResponse, { userId: number }>(
@@ -95,50 +96,8 @@ export class QuestionRepository {
         )
         .pipe(map((data) => new ResponseDto(data)))
     );
-    const dataUserAnswers = res.answers.map((answer) => answer.authorId);
 
-    const userAnswers = dataUserAnswers.map(async (userId) => {
-      const res = await firstValueFrom(
-        this.authClient
-          .send<GetMeTcpResponse, { userId: number }>(
-            TCP_REQUEST_MESSAGE.AUTH.GET_ME,
-            {
-              data: {
-                userId: userId,
-              },
-              processId: processId,
-            }
-          )
-          .pipe(map((data) => new ResponseDto(data)))
-      );
-
-      return res.data;
-    });
-    const userAnswersTransform = (await Promise.all(userAnswers)).map(
-      (user) => {
-        return {
-          id: user.id,
-          name: user.username,
-          avatar: user.avatar,
-          email: user.email,
-        };
-      }
-    );
-
-    const formatAnswers = res.answers.map((answer) => {
-      return {
-        id: answer.id,
-        content: answer.content,
-        authorId: answer.authorId,
-        createdAt: answer.createdAt,
-        updatedAt: answer.updatedAt,
-        author: userAnswersTransform.find(
-          (user) => user.id === answer.authorId
-        ),
-      };
-    });
-
-    const format = {
+    return {
       id: res.id,
       title: res.title,
       content: res.content,
@@ -152,10 +111,91 @@ export class QuestionRepository {
         name: tagQuestion.tag.name,
       })),
       author: user.data,
-      answers: formatAnswers,
     };
+  }
 
-    return format;
+  async getAnswersByQuestionId(
+    questionId: string,
+    query: ListAnswersDto,
+    processId: string
+  ) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const where = { questionId };
+
+    const [answers, total] = await this.prisma.client.$transaction([
+      this.prisma.client.answer.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.client.answer.count({ where }),
+    ]);
+
+    if (answers.length === 0) {
+      return {
+        data: [],
+        meta: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+        },
+      };
+    }
+
+    const authorIds = [...new Set(answers.map((answer) => answer.authorId))];
+
+    const userAnswers = await Promise.all(
+      authorIds.map(async (userId) => {
+        const res = await firstValueFrom(
+          this.authClient
+            .send<GetMeTcpResponse, { userId: number }>(
+              TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+              {
+                data: {
+                  userId: userId,
+                },
+                processId: processId,
+              }
+            )
+            .pipe(map((data) => new ResponseDto(data)))
+        );
+        return res.data;
+      })
+    );
+
+    const userAnswersMap = new Map(
+      userAnswers.map((user) => [
+        user.id,
+        {
+          id: user.id,
+          name: user.username,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      ])
+    );
+
+    return {
+      data: answers.map((answer) => ({
+        id: answer.id,
+        content: answer.content,
+        authorId: answer.authorId,
+        createdAt: answer.createdAt,
+        updatedAt: answer.updatedAt,
+        author: userAnswersMap.get(answer.authorId),
+      })),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getAnalytics(questionId: string, processId: string) {
