@@ -78,6 +78,7 @@ export class GoogleService {
           password: hashedPassword,
           ip: ip,
           userAgent: userAgent,
+          avatar: data.picture,
         });
       }
       const device = await this.authRepository.createDevice({

@@ -75,6 +75,11 @@ export class QuestionRepository {
             tag: true,
           },
         },
+        answers: {
+          include: {
+            author: true,
+          },
+        },
       },
     });
     const user = await firstValueFrom(
@@ -90,6 +95,49 @@ export class QuestionRepository {
         )
         .pipe(map((data) => new ResponseDto(data)))
     );
+    const dataUserAnswers = res.answers.map((answer) => answer.authorId);
+
+    const userAnswers = dataUserAnswers.map(async (userId) => {
+      const res = await firstValueFrom(
+        this.authClient
+          .send<GetMeTcpResponse, { userId: number }>(
+            TCP_REQUEST_MESSAGE.AUTH.GET_ME,
+            {
+              data: {
+                userId: userId,
+              },
+              processId: processId,
+            }
+          )
+          .pipe(map((data) => new ResponseDto(data)))
+      );
+
+      return res.data;
+    });
+    const userAnswersTransform = (await Promise.all(userAnswers)).map(
+      (user) => {
+        return {
+          id: user.id,
+          name: user.username,
+          avatar: user.avatar,
+          email: user.email,
+        };
+      }
+    );
+
+    const formatAnswers = res.answers.map((answer) => {
+      return {
+        id: answer.id,
+        content: answer.content,
+        authorId: answer.authorId,
+        createdAt: answer.createdAt,
+        updatedAt: answer.updatedAt,
+        author: userAnswersTransform.find(
+          (user) => user.id === answer.authorId
+        ),
+      };
+    });
+
     const format = {
       id: res.id,
       title: res.title,
@@ -104,6 +152,7 @@ export class QuestionRepository {
         name: tagQuestion.tag.name,
       })),
       author: user.data,
+      answers: formatAnswers,
     };
 
     return format;
