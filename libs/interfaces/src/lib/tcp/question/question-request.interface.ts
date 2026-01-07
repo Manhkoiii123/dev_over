@@ -2,6 +2,7 @@ import {
   CreateQuestionDto,
   ListQuestionsDto,
   ListAnswersDto,
+  VoteDownvoteBodyDto,
 } from '../../gateway/question';
 
 export type CreateQuestionBodyTcpRequest = CreateQuestionDto & {
@@ -29,4 +30,9 @@ export type ListAnswersByQuestionIdBodyTcpRequest = {
     userAgent: string;
     ip: string;
   };
+};
+
+export type VoteUpvoteBodyTcpRequest = VoteDownvoteBodyDto & {
+  userAgent: string;
+  ip: string;
 };

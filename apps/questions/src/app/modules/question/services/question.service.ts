@@ -8,6 +8,7 @@ import {
   ListQuestionsDto,
   ListAnswersDto,
 } from '@common/interfaces/gateway/question';
+import { ActionType } from '@common/constants/enum/vote.enum';
 
 @Injectable()
 export class QuestionService {
@@ -39,6 +40,22 @@ export class QuestionService {
       questionId,
       query,
       processId
+    );
+  }
+
+  async voteOrDownvoteQuestionAndAnswer(
+    id: string,
+    isUpvote: boolean,
+    processId: string,
+    userId: number,
+    type: ActionType
+  ) {
+    return await this.questionRepository.voteOrDownvoteQuestionAndAnswer(
+      id,
+      isUpvote,
+      processId,
+      userId,
+      type
     );
   }
 }

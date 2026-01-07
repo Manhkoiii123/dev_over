@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -113,4 +114,22 @@ export class ListAnswersDto {
   @IsPositive()
   @Max(50)
   limit?: number = 10;
+}
+
+export class VoteDownvoteBodyDto {
+  @ApiProperty({ description: 'Vote type down or up' })
+  @IsBoolean()
+  isUpvote: boolean;
+
+  @ApiProperty({ description: 'ID' })
+  @IsString()
+  id: string;
+
+  @ApiProperty({ description: 'User ID' })
+  @IsString()
+  userId: string;
+
+  @ApiProperty({ description: 'Vote type question or answer' })
+  @IsString()
+  type: string;
 }

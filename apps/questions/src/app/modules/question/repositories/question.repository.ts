@@ -16,6 +16,7 @@ import {
   ListAnswersDto,
   QuestionFilter,
 } from '@common/interfaces/gateway/question';
+import { ActionType, VoteType } from '@common/constants/enum/vote.enum';
 @Injectable()
 export class QuestionRepository {
   constructor(
@@ -130,7 +131,7 @@ export class QuestionRepository {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { upvotes: 'desc' },
       }),
       this.prisma.client.answer.count({ where }),
     ]);
@@ -343,5 +344,51 @@ export class QuestionRepository {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async voteOrDownvoteQuestionAndAnswer(
+    id: string,
+    isUpvote: boolean,
+    processId: string,
+    userId: number,
+    type: ActionType
+  ) {
+    if (type === ActionType.question) {
+      return await this.prisma.client.$transaction([
+        this.prisma.client.question.update({
+          where: { id: id },
+          data: {
+            upvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+            downvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+          },
+        }),
+        this.prisma.client.vote.create({
+          data: {
+            authorId: userId,
+            actionType: ActionType.question,
+            actionId: id,
+            voteType: isUpvote ? VoteType.upvote : VoteType.downvote,
+          },
+        }),
+      ]);
+    } else {
+      return await this.prisma.client.$transaction([
+        this.prisma.client.answer.update({
+          where: { id: id },
+          data: {
+            upvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+            downvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+          },
+        }),
+        this.prisma.client.vote.create({
+          data: {
+            authorId: userId,
+            actionType: ActionType.answer,
+            actionId: id,
+            voteType: isUpvote ? VoteType.upvote : VoteType.downvote,
+          },
+        }),
+      ]);
+    }
   }
 }

@@ -28,6 +28,7 @@ import {
   ListQuestionsResponseDto,
   QuestionAnswersResponseDto,
   QuestionResponseDto,
+  VoteDownvoteBodyDto,
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
 import {
@@ -40,6 +41,7 @@ import {
   QuestionAnswersTcpResponse,
   QuestionTcpResponse,
   ListAnswersByQuestionIdBodyTcpRequest,
+  VoteUpvoteBodyTcpRequest,
 } from '@common/interfaces/tcp/question';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { map } from 'rxjs';
@@ -199,6 +201,41 @@ export class QuestionController {
               userAgent,
               ip,
             },
+          },
+          processId: processId,
+        }
+      )
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+
+  @Post('/vote-downvote/:id')
+  @ApiOkResponse({ type: ResponseDto<string> })
+  @ApiOperation({ summary: 'Vote or downvote question or answer' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  @Authorization({ secured: true })
+  async voteDownvote(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string,
+    @UserData() userData: AuthorizedMetadata,
+    @Body() body: VoteDownvoteBodyDto
+  ) {
+    return this.questionClient
+      .send<string, VoteUpvoteBodyTcpRequest>(
+        TCP_REQUEST_MESSAGE.QUESTION.VOTE_OR_DOWNVOTE_QUESTION,
+        {
+          data: {
+            id: id,
+            userAgent,
+            ip,
+            isUpvote: body.isUpvote,
+            userId: userData.userId.toString(),
+            type: body.type,
           },
           processId: processId,
         }

@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors } from '@nestjs/common';
+import { Controller, Param, UseInterceptors } from '@nestjs/common';
 import { TcpLoggingInterceptor } from '@common/interceptors/tcpLogging.interceptor';
 import { QuestionService } from '../services/question.service';
 import { MessagePattern } from '@nestjs/microservices';
@@ -16,6 +16,7 @@ import {
 } from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 import { ProcessId } from '@common/decorators/processId.decorator';
+import { ActionType } from '@common/constants/enum/vote.enum';
 
 @Controller('question')
 @UseInterceptors(TcpLoggingInterceptor)
@@ -72,5 +73,30 @@ export class QuestionController {
       processId
     );
     return Response.success<QuestionAnswersTcpResponse>(res);
+  }
+
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.VOTE_OR_DOWNVOTE_QUESTION)
+  async voteOrDownvoteQuestion(
+    @RequestParam()
+    params: {
+      isUpvote: boolean;
+      userId: number;
+      userAgent: string;
+      ip: string;
+      type: ActionType;
+    },
+    @ProcessId() processId: string,
+    @Param('id') id: string
+  ): Promise<Response<string>> {
+    await this.questionService.voteOrDownvoteQuestionAndAnswer(
+      id,
+      params.isUpvote,
+      processId,
+      params.userId,
+      params.type
+    );
+    return Response.success<string>(
+      params.isUpvote ? HTTP_MESSAGE.UPVOTE : HTTP_MESSAGE.DOWNVOTE
+    );
   }
 }
