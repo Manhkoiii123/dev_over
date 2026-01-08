@@ -208,9 +208,9 @@ export class QuestionController {
       .pipe(map((data) => new ResponseDto(data)));
   }
 
-  @Post('/vote-downvote/:id')
+  @Post('/vote/:id')
   @ApiOkResponse({ type: ResponseDto<string> })
-  @ApiOperation({ summary: 'Vote or downvote question or answer' })
+  @ApiOperation({ summary: 'Vote question or answer' })
   @ApiHeader({
     name: 'user-agent',
     description: 'User agent của client (trình duyệt/ứng dụng)',
@@ -227,14 +227,13 @@ export class QuestionController {
   ) {
     return this.questionClient
       .send<string, VoteUpvoteBodyTcpRequest>(
-        TCP_REQUEST_MESSAGE.QUESTION.VOTE_OR_DOWNVOTE_QUESTION,
+        TCP_REQUEST_MESSAGE.QUESTION.VOTE_QUESTION_AND_ANSWER,
         {
           data: {
             id: id,
             userAgent,
             ip,
-            isUpvote: body.isUpvote,
-            userId: userData.userId.toString(),
+            userId: userData.userId,
             type: body.type,
           },
           processId: processId,

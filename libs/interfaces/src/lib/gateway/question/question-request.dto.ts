@@ -19,7 +19,7 @@ import {
 export enum QuestionFilter {
   NEWEST = 'newest',
   RECOMMENDED = 'recommended',
-  FREQUENT = 'frequent',
+  POPULAR = 'popular',
   UNANSWERED = 'unanswered',
 }
 
@@ -117,18 +117,6 @@ export class ListAnswersDto {
 }
 
 export class VoteDownvoteBodyDto {
-  @ApiProperty({ description: 'Vote type down or up' })
-  @IsBoolean()
-  isUpvote: boolean;
-
-  @ApiProperty({ description: 'ID' })
-  @IsString()
-  id: string;
-
-  @ApiProperty({ description: 'User ID' })
-  @IsString()
-  userId: string;
-
   @ApiProperty({ description: 'Vote type question or answer' })
   @IsString()
   type: string;

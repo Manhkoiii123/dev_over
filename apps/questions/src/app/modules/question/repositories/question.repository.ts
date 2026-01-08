@@ -262,7 +262,7 @@ export class QuestionRepository {
           { createdAt: 'desc' },
         ];
         break;
-      case QuestionFilter.FREQUENT:
+      case QuestionFilter.POPULAR:
         orderBy = { viewsCount: 'desc' };
         break;
       case QuestionFilter.UNANSWERED:
@@ -346,20 +346,26 @@ export class QuestionRepository {
     };
   }
 
-  async voteOrDownvoteQuestionAndAnswer(
+  async voteQuestionAndAnswer(
     id: string,
-    isUpvote: boolean,
     processId: string,
     userId: number,
     type: ActionType
   ) {
+    const isExist = await this.prisma.client.vote.findFirst({
+      where: {
+        authorId: userId,
+        actionId: id,
+      },
+    });
     if (type === ActionType.question) {
+      const isDownvote = isExist?.voteType === VoteType.downvote;
       return await this.prisma.client.$transaction([
         this.prisma.client.question.update({
           where: { id: id },
           data: {
-            upvotes: isUpvote ? { increment: 1 } : { increment: 0 },
-            downvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+            upvotes: !isExist ? { increment: 1 } : {},
+            downvotes: isDownvote ? { decrement: 1 } : {},
           },
         }),
         this.prisma.client.vote.create({
@@ -367,17 +373,18 @@ export class QuestionRepository {
             authorId: userId,
             actionType: ActionType.question,
             actionId: id,
-            voteType: isUpvote ? VoteType.upvote : VoteType.downvote,
+            voteType: VoteType.upvote,
           },
         }),
       ]);
     } else {
+      const isDownvote = isExist?.voteType === VoteType.downvote;
       return await this.prisma.client.$transaction([
         this.prisma.client.answer.update({
           where: { id: id },
           data: {
-            upvotes: isUpvote ? { increment: 1 } : { increment: 0 },
-            downvotes: isUpvote ? { increment: 1 } : { increment: 0 },
+            upvotes: !isExist ? { increment: 1 } : {},
+            downvotes: isDownvote ? { decrement: 1 } : {},
           },
         }),
         this.prisma.client.vote.create({
@@ -385,7 +392,7 @@ export class QuestionRepository {
             authorId: userId,
             actionType: ActionType.answer,
             actionId: id,
-            voteType: isUpvote ? VoteType.upvote : VoteType.downvote,
+            voteType: VoteType.upvote,
           },
         }),
       ]);

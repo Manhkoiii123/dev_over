@@ -43,16 +43,14 @@ export class QuestionService {
     );
   }
 
-  async voteOrDownvoteQuestionAndAnswer(
+  async voteQuestionAndAnswer(
     id: string,
-    isUpvote: boolean,
     processId: string,
     userId: number,
     type: ActionType
   ) {
-    return await this.questionRepository.voteOrDownvoteQuestionAndAnswer(
+    return await this.questionRepository.voteQuestionAndAnswer(
       id,
-      isUpvote,
       processId,
       userId,
       type

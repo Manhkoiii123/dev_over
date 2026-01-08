@@ -10,6 +10,7 @@ import { UserGuard } from '@common/guard/user.guard';
 import { QuestionModule } from './modules/questions/question.module';
 import { ClientsModule } from '@nestjs/microservices';
 import { TCP_SERVICES, TcpProvider } from '@common/configuration/tcp.config';
+import { AnswerModule } from './modules/answers/answer.module';
 
 // Register AUTH_SERVICE globally for UserGuard
 const GlobalTcpClients = ClientsModule.registerAsync([
@@ -25,6 +26,7 @@ const GlobalTcpClients = ClientsModule.registerAsync([
     GlobalTcpClients,
     AuthModule,
     QuestionModule,
+    AnswerModule,
   ],
   controllers: [],
   providers: [

@@ -75,28 +75,24 @@ export class QuestionController {
     return Response.success<QuestionAnswersTcpResponse>(res);
   }
 
-  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.VOTE_OR_DOWNVOTE_QUESTION)
-  async voteOrDownvoteQuestion(
+  @MessagePattern(TCP_REQUEST_MESSAGE.QUESTION.VOTE_QUESTION_AND_ANSWER)
+  async voteQuestionAndAnswer(
     @RequestParam()
     params: {
-      isUpvote: boolean;
       userId: number;
       userAgent: string;
       ip: string;
       type: ActionType;
+      id: string;
     },
-    @ProcessId() processId: string,
-    @Param('id') id: string
+    @ProcessId() processId: string
   ): Promise<Response<string>> {
-    await this.questionService.voteOrDownvoteQuestionAndAnswer(
-      id,
-      params.isUpvote,
+    await this.questionService.voteQuestionAndAnswer(
+      params.id,
       processId,
       params.userId,
       params.type
     );
-    return Response.success<string>(
-      params.isUpvote ? HTTP_MESSAGE.UPVOTE : HTTP_MESSAGE.DOWNVOTE
-    );
+    return Response.success<string>(HTTP_MESSAGE.UPVOTE);
   }
 }

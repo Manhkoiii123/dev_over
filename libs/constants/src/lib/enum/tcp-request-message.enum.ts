@@ -26,10 +26,18 @@ enum QUESTION {
   GET_LIST = 'question.get_list',
   GET_ANALYTICS = 'question.get_analytics',
   GET_ANSWERS_BY_QUESTION_ID = 'question.get_answers_by_question_id',
-  VOTE_OR_DOWNVOTE_QUESTION = 'question.vote_or_downvote_question',
+  VOTE_QUESTION_AND_ANSWER = 'question.vote_question_and_answer',
+}
+enum ANSWER {
+  GET_BY_ID = 'answer.get_by_id',
+  CREATE = 'answer.create',
+  UPDATE = 'answer.update',
+  DELETE = 'answer.delete',
+  GET_LIST = 'answer.get_list',
 }
 export const TCP_REQUEST_MESSAGE = {
   AUTH,
   MAIL,
   QUESTION,
+  ANSWER,
 };

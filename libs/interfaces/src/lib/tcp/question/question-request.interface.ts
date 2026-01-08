@@ -35,4 +35,6 @@ export type ListAnswersByQuestionIdBodyTcpRequest = {
 export type VoteUpvoteBodyTcpRequest = VoteDownvoteBodyDto & {
   userAgent: string;
   ip: string;
+  id: string;
+  userId: number;
 };
