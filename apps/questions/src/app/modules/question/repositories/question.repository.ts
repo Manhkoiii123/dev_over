@@ -398,4 +398,38 @@ export class QuestionRepository {
       ]);
     }
   }
+
+  async hadSavedVotedDownVotedQuestion(userId: number, questionId: string) {
+    const [isUpvoted, isDownvoted, isSaved] =
+      await this.prisma.client.$transaction([
+        this.prisma.client.vote.findFirst({
+          where: {
+            authorId: userId,
+            actionId: questionId,
+            actionType: ActionType.question,
+            voteType: VoteType.upvote,
+          },
+        }),
+        this.prisma.client.vote.findFirst({
+          where: {
+            authorId: userId,
+            actionId: questionId,
+            actionType: ActionType.question,
+            voteType: VoteType.downvote,
+          },
+        }),
+        this.prisma.client.collection.findFirst({
+          where: {
+            authorId: userId,
+            questionId: questionId,
+          },
+        }),
+      ]);
+
+    return {
+      isUpvoted: !!isUpvoted,
+      isSaved: !!isSaved,
+      isDownvoted: !!isDownvoted,
+    };
+  }
 }

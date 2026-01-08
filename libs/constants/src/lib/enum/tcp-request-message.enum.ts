@@ -27,6 +27,7 @@ enum QUESTION {
   GET_ANALYTICS = 'question.get_analytics',
   GET_ANSWERS_BY_QUESTION_ID = 'question.get_answers_by_question_id',
   VOTE_QUESTION_AND_ANSWER = 'question.vote_question_and_answer',
+  HAD_SAVED_VOTED_DOWN_VOTED_QUESTION = 'question.had_saved_voted_down_voted_question',
 }
 enum ANSWER {
   GET_BY_ID = 'answer.get_by_id',

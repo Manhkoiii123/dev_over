@@ -56,4 +56,11 @@ export class QuestionService {
       type
     );
   }
+
+  async hadSavedVotedDownVotedQuestion(userId: number, questionId: string) {
+    return await this.questionRepository.hadSavedVotedDownVotedQuestion(
+      userId,
+      questionId
+    );
+  }
 }

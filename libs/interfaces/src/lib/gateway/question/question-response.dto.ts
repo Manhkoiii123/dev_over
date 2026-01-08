@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDate, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { GetMeResponseDto } from '../auth/auth-response.dto';
 
@@ -196,4 +202,18 @@ export class AnalysisQuestionDto {
   @ApiProperty({ description: 'Number of answers' })
   @IsNumber()
   answersCount: number;
+}
+
+export class HadSavedVotedDownVotedQuestionDto {
+  @ApiProperty({ description: 'Has the question been upvoted' })
+  @IsBoolean()
+  isUpvoted: boolean;
+
+  @ApiProperty({ description: 'Has the question been saved' })
+  @IsBoolean()
+  isSaved: boolean;
+
+  @ApiProperty({ description: 'Has the question been downvoted' })
+  @IsBoolean()
+  isDownvoted: boolean;
 }

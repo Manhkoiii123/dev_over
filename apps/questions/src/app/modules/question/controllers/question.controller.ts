@@ -13,6 +13,7 @@ import {
   ListQuestionsTcpResponse,
   QuestionAnswersTcpResponse,
   ListAnswersByQuestionIdBodyTcpRequest,
+  HadSavedVotedDownVotedQuestionTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { HTTP_MESSAGE } from '@common/constants/enum/http-message.enum';
 import { ProcessId } from '@common/decorators/processId.decorator';
@@ -94,5 +95,26 @@ export class QuestionController {
       params.type
     );
     return Response.success<string>(HTTP_MESSAGE.UPVOTE);
+  }
+
+  @MessagePattern(
+    TCP_REQUEST_MESSAGE.QUESTION.HAD_SAVED_VOTED_DOWN_VOTED_QUESTION
+  )
+  async hadSavedVotedDownVotedQuestion(
+    @RequestParam()
+    params: {
+      userId: number;
+      userAgent: string;
+      ip: string;
+      type: ActionType;
+      id: string;
+    },
+    @ProcessId() processId: string
+  ): Promise<Response<HadSavedVotedDownVotedQuestionTcpResponse>> {
+    const res = await this.questionService.hadSavedVotedDownVotedQuestion(
+      params.userId,
+      params.id
+    );
+    return Response.success<HadSavedVotedDownVotedQuestionTcpResponse>(res);
   }
 }

@@ -38,3 +38,10 @@ export type VoteUpvoteBodyTcpRequest = VoteDownvoteBodyDto & {
   id: string;
   userId: number;
 };
+
+export type HadVotedSavedQuestionBodyTcpRequest = {
+  questionId: string;
+  userAgent: string;
+  ip: string;
+  userId: number;
+};

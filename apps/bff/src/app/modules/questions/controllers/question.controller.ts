@@ -29,6 +29,7 @@ import {
   QuestionAnswersResponseDto,
   QuestionResponseDto,
   VoteDownvoteBodyDto,
+  HadSavedVotedDownVotedQuestionDto,
 } from '@common/interfaces/gateway/question';
 import { ProcessId } from '@common/decorators/processId.decorator';
 import {
@@ -42,6 +43,8 @@ import {
   QuestionTcpResponse,
   ListAnswersByQuestionIdBodyTcpRequest,
   VoteUpvoteBodyTcpRequest,
+  HadVotedSavedQuestionBodyTcpRequest,
+  HadSavedVotedDownVotedQuestionTcpResponse,
 } from '@common/interfaces/tcp/question';
 import { TCP_REQUEST_MESSAGE } from '@common/constants/enum/tcp-request-message.enum';
 import { map } from 'rxjs';
@@ -119,7 +122,7 @@ export class QuestionController {
       .pipe(map((data) => new ResponseDto(data)));
   }
 
-  @Get(':id')
+  @Get(':id/detail')
   @ApiOkResponse({ type: ResponseDto<DetailQuestionResponseDto> })
   @ApiOperation({ summary: 'Get detail question' })
   @ApiHeader({
@@ -147,7 +150,38 @@ export class QuestionController {
       )
       .pipe(map((data) => new ResponseDto(data)));
   }
-  @Get('/analytics/:id')
+  @Get(':id/votedSavedQuestion')
+  @ApiOkResponse({ type: ResponseDto<HadSavedVotedDownVotedQuestionDto> })
+  @ApiOperation({ summary: 'Get had voted saved question' })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User agent của client (trình duyệt/ứng dụng)',
+    required: true,
+  })
+  @Authorization({ secured: true })
+  async hadVotedSavedQuestion(
+    @ProcessId() processId: string,
+    @Headers('user-agent') userAgent: string,
+    @Ip() ip: string,
+    @Param('id') id: string,
+    @UserData() userData: AuthorizedMetadata
+  ) {
+    return this.questionClient
+      .send<
+        HadSavedVotedDownVotedQuestionTcpResponse,
+        HadVotedSavedQuestionBodyTcpRequest
+      >(TCP_REQUEST_MESSAGE.QUESTION.HAD_SAVED_VOTED_DOWN_VOTED_QUESTION, {
+        data: {
+          questionId: id,
+          userAgent,
+          ip,
+          userId: userData.userId,
+        },
+        processId: processId,
+      })
+      .pipe(map((data) => new ResponseDto(data)));
+  }
+  @Get(':id/analytics')
   @ApiOkResponse({ type: ResponseDto<AnalysisQuestionDto> })
   @ApiOperation({ summary: 'Get analytics question' })
   @ApiHeader({
